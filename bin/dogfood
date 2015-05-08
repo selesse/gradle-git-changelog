@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+cd $DIR/..
+
+echo "--- Building plugin JAR ---"
+# Build the JAR, upload it to the "repo" directory
+gradlew clean uploadArchives -q
+
+echo "--- Using plugin JAR to generate a changelog ---"
+cd samples
+# Use the JAR to generate a changelog
+gradle generateChangelog
