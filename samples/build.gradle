@@ -5,7 +5,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.selesse.gradle:git-changelog:1.0-SNAPSHOT'
+        classpath 'com.selesse:gradle-git-changelog:1.0-SNAPSHOT'
     }
 }
 
