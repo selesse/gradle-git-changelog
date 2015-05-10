@@ -4,6 +4,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 class GenerateChangelogTask extends DefaultTask {
+
     public GenerateChangelogTask() {
         this.description = 'Generates a changelog'
         this.group = 'build'
@@ -11,7 +12,7 @@ class GenerateChangelogTask extends DefaultTask {
 
     @TaskAction
     def generateChangelog() {
-        def title = project.name
+        def title = project.changelog.title
         def heading = "$title\n${'='.multiply(title.length())}\n\n"
 
         def changelog = ['git', 'log', '--pretty=format:%ad%x09%s (%an)'].execute().text.trim()

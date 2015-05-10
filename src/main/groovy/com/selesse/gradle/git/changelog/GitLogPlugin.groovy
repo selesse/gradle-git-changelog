@@ -9,9 +9,15 @@ import org.gradle.api.plugins.BasePlugin
 
 class GitLogPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(GitLogPlugin)
+    private GitChangelogExtension extension
 
     @Override
     void apply(Project project) {
+        extension = project.extensions.create("changelog", GitChangelogExtension)
+
+        extension.with {
+            title = project.name
+        }
         GenerateChangelogTask task = project.tasks.create("generateChangelog", GenerateChangelogTask)
 
         if (project.plugins.hasPlugin(BasePlugin)) {
