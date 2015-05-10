@@ -21,4 +21,18 @@ class GitLogPluginTest {
 
         assertTrue(project.tasks.assemble.dependsOn.contains(project.tasks.generateChangelog))
     }
+
+    @Test public void testProcessResources_dependsOnGenerateChangelog() {
+        Project project = ProjectBuilder.builder().build()
+        project.pluginManager.apply 'java'
+        project.pluginManager.apply 'com.selesse.git.changelog'
+
+        assertTrue(project.tasks.processResources.dependsOn.contains(project.tasks.generateChangelog))
+
+        project = ProjectBuilder.builder().build()
+        project.pluginManager.apply 'groovy'
+        project.pluginManager.apply 'com.selesse.git.changelog'
+
+        assertTrue(project.tasks.processResources.dependsOn.contains(project.tasks.generateChangelog))
+    }
 }
