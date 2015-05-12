@@ -18,6 +18,7 @@ dependencies {
     testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
         exclude group: 'org.codehaus.groovy'
     }
+    testCompile 'org.assertj:assertj-core:1.7.1'
 }
 
 uploadArchives {
