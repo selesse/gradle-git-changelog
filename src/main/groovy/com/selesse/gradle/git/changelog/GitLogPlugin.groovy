@@ -24,6 +24,7 @@ class GitLogPlugin implements Plugin<Project> {
         extension.with {
             title = project.name
             outputDirectory = defaultOutputDirectory
+            fileName = 'CHANGELOG.md'
         }
 
         logger.info("Initialized with settings: ${extension}")

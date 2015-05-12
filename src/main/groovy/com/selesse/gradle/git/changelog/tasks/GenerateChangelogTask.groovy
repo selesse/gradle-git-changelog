@@ -13,7 +13,8 @@ class GenerateChangelogTask extends DefaultTask {
     @TaskAction
     def generateChangelog() {
         def outputDirectoryFile = project.changelog.outputDirectory as File
-        File changelogFile = new File(outputDirectoryFile, "changelog.md")
+        def fileName = project.changelog.fileName as String
+        File changelogFile = new File(outputDirectoryFile, fileName)
         outputDirectoryFile.mkdirs()
 
         generateChangelog(new PrintStream(new FileOutputStream(changelogFile)))

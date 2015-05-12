@@ -35,6 +35,10 @@ changelog {
     // The output directory where the report is generated.
     // Default value: main resource directory, or the "build" directory
     outputDirectory: file("$projectDir")
+
+    // The name of the report to generate.
+    // Default value: CHANGELOG.md
+    fileName: "changelog.txt"
 }
 ```
 

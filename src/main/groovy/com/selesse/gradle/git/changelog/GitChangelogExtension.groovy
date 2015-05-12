@@ -6,4 +6,5 @@ import groovy.transform.ToString
 class GitChangelogExtension {
     String title
     File outputDirectory
+    String fileName
 }
