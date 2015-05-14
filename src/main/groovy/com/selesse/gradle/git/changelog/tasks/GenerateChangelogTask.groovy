@@ -1,5 +1,9 @@
 package com.selesse.gradle.git.changelog.tasks
+
 import com.google.common.base.Splitter
+import com.selesse.gradle.git.changelog.generator.ChangelogGenerator
+import com.selesse.gradle.git.changelog.generator.ComplexChangelogGenerator
+import com.selesse.gradle.git.changelog.generator.SimpleChangelogGenerator
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging

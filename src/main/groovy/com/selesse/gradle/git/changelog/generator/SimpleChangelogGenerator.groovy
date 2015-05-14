@@ -1,4 +1,4 @@
-package com.selesse.gradle.git.changelog.tasks
+package com.selesse.gradle.git.changelog.generator
 
 class SimpleChangelogGenerator implements ChangelogGenerator {
     String changelogFormat

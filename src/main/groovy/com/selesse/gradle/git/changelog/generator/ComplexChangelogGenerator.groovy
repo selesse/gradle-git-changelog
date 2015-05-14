@@ -1,4 +1,4 @@
-package com.selesse.gradle.git.changelog.tasks
+package com.selesse.gradle.git.changelog.generator
 
 import com.google.common.base.Joiner
 import com.google.common.base.MoreObjects
