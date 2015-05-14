@@ -5,6 +5,7 @@ buildscript {
         maven {
             url uri('../repo')
         }
+        mavenCentral()
     }
     dependencies {
         classpath 'com.selesse:gradle-git-changelog:1.0-SNAPSHOT'
