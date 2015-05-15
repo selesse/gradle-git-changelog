@@ -53,8 +53,9 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
      private void appendLastCommitChangelog(Map<String, String> dateCommitMap, List<String> dates, ArrayList<String> changelogs) {
           def firstCommit = dateCommitMap.get(dates.last())
           def secondCommit = executor.getLatestCommit()
-          if (firstCommit != secondCommit) {
-               changelogs << getChangelogSection("Unreleased", executor.getGitChangelog(firstCommit, secondCommit))
+          def changelog = executor.getGitChangelog(firstCommit, secondCommit)
+          if (changelog.length() > 0) {
+               changelogs << getChangelogSection("Unreleased", changelog)
           }
      }
 
