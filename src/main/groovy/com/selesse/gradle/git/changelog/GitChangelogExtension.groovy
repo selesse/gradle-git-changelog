@@ -7,4 +7,5 @@ class GitChangelogExtension {
     String title
     File outputDirectory
     String fileName
+    String commitFormat
 }

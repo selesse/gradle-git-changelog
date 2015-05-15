@@ -25,6 +25,7 @@ class GitLogPlugin implements Plugin<Project> {
             title = project.name
             outputDirectory = defaultOutputDirectory
             fileName = 'CHANGELOG.md'
+            commitFormat = '%ad%x09%s (%an)'
         }
 
         logger.info("Initialized with settings: ${extension}")

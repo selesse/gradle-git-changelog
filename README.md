@@ -26,19 +26,26 @@ This will automatically hook the `generateChangelog` task into the
 
 ## Configuration
 
+All of these configurations are optional.
+
 ```groovy
 changelog {
     // The title appears at the top of the changelog.
     // Default value: the name of the project.
-    title: "${project.name} - Changelog"
+    title = "${project.name} - Changelog"
 
     // The output directory where the report is generated.
     // Default value: main resource directory, or the "build" directory
-    outputDirectory: file("$projectDir")
+    outputDirectory = file("$projectDir")
 
     // The name of the report to generate.
     // Default value: CHANGELOG.md
-    fileName: "changelog.txt"
+    fileName = "changelog.txt"
+
+    // The Git "pretty" changelog commit format.
+    // Default value: %ad%x09%s (%an), which produces:
+    // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
+    commitFormat = '%s (%an)'
 }
 ```
 

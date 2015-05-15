@@ -39,8 +39,7 @@ class GenerateChangelogTask extends DefaultTask {
     private String generateChangelogContent() {
         def title = project.changelog.title
         def heading = "$title\n${'='.multiply(title.length())}\n\n"
-        // TODO(AS): Externalize this into plugin property
-        def changelogFormat = '%ad%x09%s (%an)'
+        def changelogFormat = project.changelog.commitFormat as String
 
         def gitCommandExecutor = new GitCommandExecutor(changelogFormat)
         def tags = gitCommandExecutor.getTags()
