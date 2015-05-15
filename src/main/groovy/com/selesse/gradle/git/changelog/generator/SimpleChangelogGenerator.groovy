@@ -1,14 +1,16 @@
 package com.selesse.gradle.git.changelog.generator
 
-class SimpleChangelogGenerator implements ChangelogGenerator {
-    String changelogFormat
+import com.selesse.gradle.git.GitCommandExecutor
 
-    SimpleChangelogGenerator(String changelogFormat) {
-        this.changelogFormat = changelogFormat
+class SimpleChangelogGenerator implements ChangelogGenerator {
+    GitCommandExecutor executor
+
+    SimpleChangelogGenerator(GitCommandExecutor executor) {
+        this.executor = executor
     }
 
     @Override
     String generateChangelog() {
-        return ['git', 'log', "--pretty=format:${changelogFormat}"].execute().text.trim()
+        executor.getGitChangelog()
     }
 }

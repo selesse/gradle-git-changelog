@@ -1,28 +1,32 @@
 package com.selesse.gradle.git.changelog.generator
-
 import com.google.common.base.Joiner
 import com.google.common.base.MoreObjects
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import com.google.common.base.Splitter
+import com.selesse.gradle.git.GitCommandExecutor
 
 class ComplexChangelogGenerator implements ChangelogGenerator {
-     Logger logger = Logging.getLogger(ComplexChangelogGenerator)
-     final String changelogFormat
      final Map<String, String> tagAndDateMap
+     final GitCommandExecutor executor
 
-     ComplexChangelogGenerator(String changelogFormat, Map<String, String> tagAndDateMap) {
-          this.changelogFormat = changelogFormat
-          this.tagAndDateMap = tagAndDateMap
+     ComplexChangelogGenerator(GitCommandExecutor executor, List<String> tags) {
+          this.executor = executor
+          this.tagAndDateMap = tags.collectEntries {
+               def tagAndDate = Splitter.on("|").omitEmptyStrings().trimResults().splitToList(it) as List<String>
+               if (tagAndDate.size() != 2) {
+                    tagAndDate = [tagAndDate.get(0), null]
+               }
+               [(tagAndDate.get(0)):tagAndDate.get(1)]
+          } as Map<String, String>
      }
 
      String generateChangelog() {
           List<String> changelogs = []
 
           def dateCommitMap = tagAndDateMap.keySet().collectEntries {
-               [(['git', 'log', '-1', '--format=%ai', it].execute().text.trim()): it]
+               [(executor.getCommitDate(it)): it]
           } as Map<String, String>
 
-          def dates = (dateCommitMap.keySet() as List<String>).sort()
+          def dates = dateCommitMap.keySet().sort()
 
           appendFirstCommitChangeLog(dates, dateCommitMap, tagAndDateMap, changelogs)
 
@@ -32,10 +36,10 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
                def secondCommitDate = dates.get(i + 1)
                def secondCommit = dateCommitMap.get(secondCommitDate)
 
-               secondCommitDate = MoreObjects.firstNonNull(tagAndDateMap.get(secondCommit), getTagDate(secondCommit))
+               secondCommitDate = MoreObjects.firstNonNull(tagAndDateMap.get(secondCommit), executor.getTagDate(secondCommit))
 
-               def sectionTitle = "${getTagName(secondCommit)} (${secondCommitDate})"
-               def sectionChangelog = getGitChangelog(firstCommit, secondCommit)
+               def sectionTitle = "${executor.getTagName(secondCommit)} (${secondCommitDate})"
+               def sectionChangelog = executor.getGitChangelog(firstCommit, secondCommit)
 
                changelogs << getChangelogSection(sectionTitle, sectionChangelog)
           }
@@ -48,9 +52,9 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
 
      private void appendLastCommitChangelog(Map<String, String> dateCommitMap, List<String> dates, ArrayList<String> changelogs) {
           def firstCommit = dateCommitMap.get(dates.last())
-          def secondCommit = getLatestCommit()
+          def secondCommit = executor.getLatestCommit()
           if (firstCommit != secondCommit) {
-               changelogs << getChangelogSection("Unreleased", getGitChangelog(firstCommit, secondCommit))
+               changelogs << getChangelogSection("Unreleased", executor.getGitChangelog(firstCommit, secondCommit))
           }
      }
 
@@ -59,10 +63,10 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
           def secondCommitDate = dates.get(0)
           def secondCommit = dateCommitMap.get(secondCommitDate)
 
-          secondCommitDate = MoreObjects.firstNonNull(tagAndDateMap.get(secondCommit), getTagDate(secondCommit))
+          secondCommitDate = MoreObjects.firstNonNull(tagAndDateMap.get(secondCommit), executor.getTagDate(secondCommit))
 
-          def sectionTitle = "${getTagName(secondCommit)} (${secondCommitDate})"
-          def sectionChangelog = getGitChangelog(secondCommit)
+          def sectionTitle = "${executor.getTagName(secondCommit)} (${secondCommitDate})"
+          def sectionChangelog = executor.getGitChangelog(secondCommit)
           changelogs << getChangelogSection(sectionTitle, sectionChangelog)
      }
 
@@ -77,30 +81,4 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
           return changelogSection.toString()
      }
 
-     private String[] getBaseGitCommand() {
-          return ['git', 'log', "--pretty=format:${changelogFormat}"]
-     }
-
-     private String getGitChangelog(String reference) {
-          logger.info("Getting Git changelog for {}", reference)
-          return ((getBaseGitCommand() + [reference]) as List<String>).execute().text.trim()
-     }
-
-     private String getGitChangelog(String firstReference, String secondReference) {
-          logger.info("Getting Git changelog for {}...{}", firstReference, secondReference)
-          return ((getBaseGitCommand() + ["${firstReference}...${secondReference}"]) as List<String>)
-                  .execute().text.trim()
-     }
-
-     private String getTagName(String commit) {
-          return ['git', 'describe', '--tags', commit].execute().text.trim()
-     }
-
-     private String getTagDate(String tag) {
-          return ['git', 'log', '-1', '--format=%ai', tag].execute().text.trim()
-     }
-
-     private String getLatestCommit() {
-          return ['git', 'log', '-1', '--pretty=format:%H'].execute().text.trim()
-     }
 }

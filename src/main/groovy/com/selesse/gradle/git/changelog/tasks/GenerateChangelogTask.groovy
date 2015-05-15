@@ -1,6 +1,6 @@
 package com.selesse.gradle.git.changelog.tasks
 
-import com.google.common.base.Splitter
+import com.selesse.gradle.git.GitCommandExecutor
 import com.selesse.gradle.git.changelog.generator.ChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.ComplexChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.SimpleChangelogGenerator
@@ -42,27 +42,17 @@ class GenerateChangelogTask extends DefaultTask {
         // TODO(AS): Externalize this into plugin property
         def changelogFormat = '%ad%x09%s (%an)'
 
-        def tags = Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(
-                ['git', 'for-each-ref', '--format=%(objectname) | %(taggerdate)', 'refs/tags'].execute().text.trim()
-        )
+        def gitCommandExecutor = new GitCommandExecutor(changelogFormat)
+        def tags = gitCommandExecutor.getTags()
 
         ChangelogGenerator changelogGenerator
 
         if (tags.size() == 0) {
             logger.info("No tags found, generating basic changelog")
-            changelogGenerator = new SimpleChangelogGenerator(changelogFormat)
+            changelogGenerator = new SimpleChangelogGenerator(gitCommandExecutor)
         } else {
             logger.info("{} tags were found, generating complex changelog", tags.size())
-
-            def tagAndDateMap = tags.collectEntries {
-                def tagAndDate = Splitter.on("|").omitEmptyStrings().trimResults().splitToList(it) as List<String>
-                if (tagAndDate.size() != 2) {
-                    tagAndDate = [tagAndDate.get(0), null]
-                }
-                [(tagAndDate.get(0)):tagAndDate.get(1)]
-            } as Map<String, String>
-
-            changelogGenerator = new ComplexChangelogGenerator(changelogFormat, tagAndDateMap)
+            changelogGenerator = new ComplexChangelogGenerator(gitCommandExecutor, tags)
         }
 
         def changelog = changelogGenerator.generateChangelog()
