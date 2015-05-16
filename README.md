@@ -1,5 +1,7 @@
 # Gradle Git Changelog
 
+[![Build status](https://travis-ci.org/selesse/gradle-git-changelog.png)](https://travis-ci.org/selesse/gradle-git-changelog)
+
 Gradle plugin for generating a changelog based on a Git commit history.
 
 **Note**: This plugin is not yet stable and is being actively developed.
