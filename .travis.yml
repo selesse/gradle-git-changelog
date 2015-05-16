@@ -1,0 +1,13 @@
+language: java
+jdk:
+- openjdk6
+after_success:
+- ".buildscript/deploy_snapshot.sh"
+env:
+  global:
+  - secure: mbGtJIqVQwenoRA/BWvEYibiXkVoXQ7oEBCB9hDiMdJ4unWGBwFCs1eAIE7xukUIWx3WtXhW3lh4HMGlgTnscq+V28UVSlJXdL9lInJtofELSAksPFopCjfgv6Wk4HbDYN2esv3QJa+camtNI+NbY+awH3B0wqI5opSjUYrF6Fo=
+  - secure: Y3BjyjxuSHk3Y4Gs7/A0/VGgg0mksVVjdsGWSIJH9+AEVtf5y+XJZpfdAwVeExqkWIbQzCTsyeVdpkL+fuW5iOxU+ha6clEHg8de9dnCb/DwQa+heIweLlmgPKItwtMKz8jGXVIBMlZNtAN23SLaOOT5PtzlZX08zKffbKI9EnQ=
+  - secure: Z9osFx4AMArPRcSdlOpB+K2AcvNb/x2BhGZc7kJv7V3Gvi37DXqb0cWIxDZ1btZ53ARwIh97rkXOakkQdOu6oRxtBa35WV+uB/QBlYXO3BK9iKP3ovFU5iCx11RKFbi9CcEhKDgQrhGQhlf+9MNa3ZFOUc+AxOJtK0TLUEgpRZQ=
+branches:
+  except:
+  - gh-pages
