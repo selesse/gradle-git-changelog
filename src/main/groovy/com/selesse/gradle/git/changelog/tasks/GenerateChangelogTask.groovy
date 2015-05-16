@@ -55,7 +55,6 @@ class GenerateChangelogTask extends DefaultTask {
         }
 
         def changelog = changelogGenerator.generateChangelog()
-        print heading + changelog
         return heading + changelog
     }
 }
