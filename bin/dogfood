@@ -7,8 +7,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $DIR/..
 
 echo "--- Building plugin JAR ---"
-# Build the JAR, upload it to the "repo" directory
-gradlew clean uploadArchives -q
+# Build the JAR, upload it to the local Maven directory
+gradlew clean install -q
 
 echo "--- Using plugin JAR to generate a changelog ---"
 cd samples

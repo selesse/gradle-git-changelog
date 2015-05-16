@@ -2,9 +2,7 @@ apply plugin: 'base'
 
 buildscript {
     repositories {
-        maven {
-            url uri('../repo')
-        }
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
