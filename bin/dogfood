@@ -14,3 +14,4 @@ echo "--- Using plugin JAR to generate a changelog ---"
 cd samples
 # Use the JAR to generate a changelog
 gradle generateChangelog
+cat CHANGELOG.md

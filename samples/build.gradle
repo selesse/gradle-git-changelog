@@ -16,4 +16,5 @@ apply plugin: 'com.selesse.git.changelog'
 
 changelog {
     title = 'Sample Plugin Implementation'
+    outputDirectory = file("$projectDir")
 }
