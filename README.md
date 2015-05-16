@@ -12,7 +12,7 @@ Gradle plugin for generating a changelog based on a Git commit history.
 buildscript {
     repositories {
         maven {
-            url uri('path/to/repo')
+            url "https://oss.sonatype.org/content/repositories/snapshots"
         }
     }
     dependencies {
