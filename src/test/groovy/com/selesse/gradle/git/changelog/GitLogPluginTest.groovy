@@ -20,7 +20,7 @@ class GitLogPluginTest {
         project.pluginManager.apply 'com.selesse.git.changelog'
 
         assertThat(project.tasks.assemble.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory.absolutePath as String).endsWith('build')
+        assertThat(project.extensions.changelog.outputDirectory.absolutePath.replace("\\", "/") as String).endsWith('build')
     }
 
     @Test public void testProcessResources_dependsOnGenerateChangelog() {
@@ -29,20 +29,24 @@ class GitLogPluginTest {
         project.pluginManager.apply 'com.selesse.git.changelog'
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory.absolutePath as String).endsWith('build/resources/main')
+        assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
 
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'groovy'
         project.pluginManager.apply 'com.selesse.git.changelog'
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory.absolutePath as String).endsWith('build/resources/main')
+        assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
 
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'war'
         project.pluginManager.apply 'com.selesse.git.changelog'
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory.absolutePath as String).endsWith('build/resources/main')
+        assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
+    }
+
+    private String getOutputDirectoryPath(Project project) {
+        project.extensions.changelog.outputDirectory.absolutePath.replace("\\", "/") as String
     }
 }
