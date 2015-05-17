@@ -23,23 +23,23 @@ Wed May 13 20:00:15 2015 -0400\tInitial commit (Alex Selesse)"""
         def lightweightTag = 'lw-0.2.0 (2015-05-13 20:13:16 -0400)'
         def annotatedTag = 'v0.1.0 (Wed May 13 20:00:37 2015 -0400)'
         def changelogParser = new ChangelogParser(changelogString)
-        assertThat(changelogParser.tags).containsOnly(
+        assertThat(changelogParser.headings).containsOnly(
                 unreleasedTag, lightweightTag, annotatedTag
         )
-        assertThat(changelogParser.tagsAndTheirCommits.asMap()).containsOnlyKeys(
+        assertThat(changelogParser.headingsAndTheirCommits.asMap()).containsOnlyKeys(
                 unreleasedTag, lightweightTag, annotatedTag
         )
 
-        def unreleasedCommits = changelogParser.tagsAndTheirCommits.get(unreleasedTag)
+        def unreleasedCommits = changelogParser.headingsAndTheirCommits.get(unreleasedTag)
         assertThat(unreleasedCommits).containsOnly('Wed May 13 22:48:19 2015 -0400\tRemove junk (Alex Selesse)')
 
-        def lightweightCommits = changelogParser.tagsAndTheirCommits.get(lightweightTag)
+        def lightweightCommits = changelogParser.headingsAndTheirCommits.get(lightweightTag)
         assertThat(lightweightCommits).containsOnly(
                 'Wed May 13 20:13:16 2015 -0400\tAnother commit (Alex Selesse)',
                 'Wed May 13 20:06:46 2015 -0400\tCommit #2 (Alex Selesse)'
         )
 
-        def annotatedCommits = changelogParser.tagsAndTheirCommits.get(annotatedTag)
+        def annotatedCommits = changelogParser.headingsAndTheirCommits.get(annotatedTag)
         assertThat(annotatedCommits).containsOnly(
                 'Wed May 13 20:00:15 2015 -0400\tInitial commit (Alex Selesse)',
         )

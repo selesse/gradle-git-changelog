@@ -6,12 +6,12 @@ import com.google.common.collect.Multimap
 import java.util.regex.Pattern
 
 class ChangelogParser {
-    List<String> tags
-    Multimap<String, String> tagsAndTheirCommits
+    List<String> headings
+    Multimap<String, String> headingsAndTheirCommits
 
     ChangelogParser(String changelogString) {
-        this.tags = []
-        this.tagsAndTheirCommits = LinkedHashMultimap.create()
+        this.headings = []
+        this.headingsAndTheirCommits = LinkedHashMultimap.create()
 
         parseChangelogString(changelogString)
     }
@@ -35,16 +35,16 @@ class ChangelogParser {
             // The pattern is "Title\n-----" for tags
             if (nextLine != null && '-'.multiply(currentLine.length()).equals(nextLine)) {
                 currentTag = currentLine
-                tags.add(currentTag)
+                headings.add(currentTag)
             } else {
                 if (!currentLine.matches(/^-+$/)) {
-                    tagsAndTheirCommits.put(currentTag, currentLine)
+                    headingsAndTheirCommits.put(currentTag, currentLine)
                 }
             }
         }
     }
 
-    def extractTagAndDate(String string) {
+    public static extractTagAndDate(String string) {
         def matches = string =~ ~/([^\s]+) \(([^)]+)\)/
 
         return [matches[0][1], matches[0][2]]

@@ -1,9 +1,10 @@
 package com.selesse.gradle.git.changelog.generator
 
-import com.google.common.base.Splitter
 import com.selesse.dates.FlexibleDateParser
 import com.selesse.gitwrapper.fixtures.GitRepositoryBuilder
 import com.selesse.gradle.git.GitCommandExecutor
+import com.selesse.gradle.git.changelog.ChangelogParser
+import groovy.time.TimeCategory
 import org.junit.After
 import org.junit.Test
 
@@ -34,23 +35,23 @@ class ComplexChangelogGeneratorTest {
         def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
         List<String> tags = executor.getTags()
 
-        assertThat(tags).hasSize(1)
-
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
         String generatedChangelog = changelogGenerator.generateChangelog()
 
-        assertThat(generatedChangelog).endsWith(
-                "----------------------------------\n" +
-                        "Initial commit (Test Account)\n")
-        List<String> lines = Splitter.on('\n').splitToList(generatedChangelog)
-        def (tag, date) = extractTagAndDate(lines.get(0))
+        def changelogParser = new ChangelogParser(generatedChangelog)
+        assertThat(changelogParser.headings).hasSize(1)
 
-        assertThat(tag).isEqualTo("v0.1.0")
-        Date commitDate = new FlexibleDateParser().parseDate(date)
-        assertThat(commitDate).isBetween(new Date().minus(1), new Date())
+        def changelogTag = changelogParser.headings.get(0)
+        def (tag, date) = ChangelogParser.extractTagAndDate(changelogTag)
+
+        assertThat(tag).isEqualTo('v0.1.0')
+        assertThat(dateOccurredInLastDay(date)).isTrue()
+
+        assertThat(changelogParser.headingsAndTheirCommits.get(changelogTag))
+                .containsOnly('Initial commit (Test Account)')
     }
 
-    @Test public void testComplexChangelog_withAnAnnotatedTag() {
+    @Test public void testComplexChangelog_withAnAnnotatedTag_usesTheAnnotatedTagDate() {
         GitRepositoryBuilder repository =
                 GitRepositoryBuilder.create()
                         .runCommand('git init')
@@ -72,21 +73,72 @@ class ComplexChangelogGeneratorTest {
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
         String generatedChangelog = changelogGenerator.generateChangelog()
 
-        assertThat(generatedChangelog)
-                .startsWith('v0.1.0-a (')
-                .endsWith("----------------------------------\n" +
-                          "Initial commit from the past (Test Account)\n")
-        List<String> lines = Splitter.on('\n').splitToList(generatedChangelog)
-        def (tag, date) = extractTagAndDate(lines.get(0))
+        def changelogParser = new ChangelogParser(generatedChangelog)
+        assertThat(changelogParser.headings).hasSize(1)
 
-        assertThat(tag).isEqualTo("v0.1.0-a")
-        Date tagDate = new FlexibleDateParser().parseDate(date)
-        assertThat(tagDate).isBetween(new Date().minus(1), new Date())
+        def changelogTag = changelogParser.headings.get(0)
+        def (tag, date) = ChangelogParser.extractTagAndDate(changelogTag)
+
+        assertThat(tag).isEqualTo('v0.1.0-a')
+        // This assertion is important: an annotated tag date should take precedence over a commit date
+        assertThat(dateOccurredInLastDay(date)).isTrue()
+
+        assertThat(changelogParser.headingsAndTheirCommits.get(changelogTag))
+                .containsOnly('Initial commit from the past (Test Account)')
     }
 
-    def extractTagAndDate(String string) {
-        def matches = string =~ ~/([^\s]+) \(([^)]+)\)/
+    @Test public void testComplexChangelog_withUnreleasedAndAnnotatedAndUnannotatedTags() {
+        GitRepositoryBuilder repository =
+                GitRepositoryBuilder.create()
+                        .runCommand('git init')
+                        .runCommand('git', 'config', 'user.name', 'Test Account')
+                        .createFile('README.md', 'Hello world!')
+                        .runCommand('git add README.md')
+                        .runCommand('git', 'commit', '-m', 'Initial commit from the past')
+                        .runCommand('git', 'commit', '--amend', '--date=2015-05-01 00:00:00 -0400', '-C', 'HEAD')
+                        .runCommand('git', 'tag', '-a', 'v0.1.0-a', '-m', 'This is an annotated tag')
+                        .createFile('CONTRIBUTORS.md', 'This is a list of contributors to this project')
+                        .runCommand('git add CONTRIBUTORS.md')
+                        .runCommand('git', 'commit', '-m', 'Add contributors')
+                        .runCommand('git tag v0.2.0-l')
+                        .runCommand('git rm CONTRIBUTORS.md')
+                        .runCommand('git', 'commit', '-m', 'Changed my mind - no contributors')
+                        .build()
 
-        return [matches[0][1], matches[0][2]]
+        temporaryGitDirectory = repository.getDirectory()
+
+        def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
+        List<String> tags = executor.getTags()
+
+        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
+        String generatedChangelog = changelogGenerator.generateChangelog()
+
+        def changelogParser = new ChangelogParser(generatedChangelog)
+        def headings = changelogParser.headings
+        assertThat(headings).hasSize(3)
+
+        def unreleasedHeading = 'Unreleased'
+        assertThat(headings.get(0)).isEqualTo(unreleasedHeading)
+        assertThat(headings.get(1)).startsWith('v0.2.0-l')
+        assertThat(headings.get(2)).startsWith('v0.1.0-a')
+        def lightWeightTag = headings.get(1)
+        def annotatedTag = headings.get(2)
+
+        assertThat(changelogParser.headingsAndTheirCommits.get(unreleasedHeading))
+                .containsOnly('Changed my mind - no contributors (Test Account)')
+        assertThat(changelogParser.headingsAndTheirCommits.get(lightWeightTag))
+                .containsOnly('Add contributors (Test Account)')
+        assertThat(changelogParser.headingsAndTheirCommits.get(annotatedTag))
+                .containsOnly('Initial commit from the past (Test Account)')
+
+        def (tag, date) = ChangelogParser.extractTagAndDate(lightWeightTag)
+        assertThat(tag).isEqualTo('v0.2.0-l')
+        assertThat(dateOccurredInLastDay(date)).isTrue()
+    }
+
+    boolean dateOccurredInLastDay(String dateFormattedString) {
+        Date commitDate = new FlexibleDateParser().parseDate(dateFormattedString)
+        // This assertion is important: an annotated tag date should take precedence over a commit date
+        TimeCategory.minus(new Date(), commitDate).days <= 1
     }
 }
