@@ -134,6 +134,10 @@ class ComplexChangelogGeneratorTest {
         def (tag, date) = ChangelogParser.extractTagAndDate(lightWeightTag)
         assertThat(tag).isEqualTo('v0.2.0-l')
         assertThat(dateOccurredInLastDay(date)).isTrue()
+
+        (tag, date) = ChangelogParser.extractTagAndDate(annotatedTag)
+        assertThat(tag).isEqualTo('v0.1.0-a')
+        assertThat(dateOccurredInLastDay(date)).isTrue()
     }
 
     boolean dateOccurredInLastDay(String dateFormattedString) {
