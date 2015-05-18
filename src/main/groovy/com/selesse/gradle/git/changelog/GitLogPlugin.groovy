@@ -1,4 +1,5 @@
 package com.selesse.gradle.git.changelog
+
 import com.selesse.gradle.git.changelog.tasks.GenerateChangelogTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
