@@ -19,7 +19,6 @@ class GitCommandExecutor {
         this.executionContext = context
     }
 
-
     public List<String> getTags() {
         Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(
                 executeCommand('git', 'for-each-ref', '--format=%(objectname) | %(taggerdate)', 'refs/tags')

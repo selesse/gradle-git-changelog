@@ -8,4 +8,6 @@ class GitChangelogExtension {
     File outputDirectory
     String fileName
     String commitFormat
+    Closure includeLines
+    Closure processLines
 }

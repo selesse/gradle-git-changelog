@@ -1,6 +1,9 @@
 package com.selesse.gradle.git.changelog.tasks
 
+import com.google.common.base.Joiner
+import com.google.common.base.Splitter
 import com.selesse.gradle.git.GitCommandExecutor
+import com.selesse.gradle.git.changelog.GitChangelogExtension
 import com.selesse.gradle.git.changelog.generator.ChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.ComplexChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.SimpleChangelogGenerator
@@ -36,25 +39,42 @@ class GenerateChangelogTask extends DefaultTask {
         return content
     }
 
-    private String generateChangelogContent() {
-        def title = project.changelog.title
-        def heading = "$title\n${'='.multiply(title.length())}\n\n"
-        def changelogFormat = project.changelog.commitFormat as String
+    String generateChangelogContent() {
+        GitChangelogExtension extension = project.changelog
 
+        def title = extension.title
+        def heading = "$title\n${'='.multiply(title.length())}\n\n"
+
+        def changelogFormat = extension.commitFormat
         def gitCommandExecutor = new GitCommandExecutor(changelogFormat)
-        def tags = gitCommandExecutor.getTags()
+
+        return heading + generateChangelogContent(extension, gitCommandExecutor)
+    }
+
+    String generateChangelogContent(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
+        def tags = gitExecutor.getTags()
 
         ChangelogGenerator changelogGenerator
 
         if (tags.size() == 0) {
             logger.info("No tags found, generating basic changelog")
-            changelogGenerator = new SimpleChangelogGenerator(gitCommandExecutor)
+            changelogGenerator = new SimpleChangelogGenerator(gitExecutor)
         } else {
             logger.info("{} tags were found, generating complex changelog", tags.size())
-            changelogGenerator = new ComplexChangelogGenerator(gitCommandExecutor, tags)
+            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags)
         }
 
         def changelog = changelogGenerator.generateChangelog()
-        return heading + changelog
+        if (extension.includeLines || extension.processLines) {
+            Iterable<String> changelogLines = Splitter.on('\n').split(changelog)
+            if (extension.includeLines) {
+                changelogLines = changelogLines.findAll extension.includeLines
+            }
+            if (extension.processLines) {
+                changelogLines = changelogLines.collect extension.processLines
+            }
+            changelog = Joiner.on('\n').join(changelogLines)
+        }
+        return changelog
     }
 }

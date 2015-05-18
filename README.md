@@ -48,13 +48,27 @@ changelog {
     // Default value: %ad%x09%s (%an), which produces:
     // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
     commitFormat = '%s (%an)'
+
+    // A closure that returns 'true' if the line should be included in the changelog.
+    // Default value: accept everything, { true }
+    includeLines = {
+        !it.contains("Merge")
+    }
+
+    // A closure that transforms a changelog String.
+    // Default value: the identity closure, { it }
+    //
+    // For example, to remove '[ci skip]' from the changelog messages:
+    processLines = {
+        String input = it as String
+        if (input.startsWith('[ci skip] ')) {
+            input = input.minus('[ci skip] ')
+        }
+        input
+    }
 }
 ```
 
 ## Planned Features
 
 * Choice of HTML or plain-text changelog, with overridable HTML templates
-* Format customization
-* Sections based on tags
-* Ability to filter out certain lines (i.e. exclude merge commits), or process
-  certain lines (i.e. `RELEASE-NOTES: hi` => `hi`)
