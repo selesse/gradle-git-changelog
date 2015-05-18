@@ -53,7 +53,7 @@ changelog {
 
 ## Planned Features
 
-* Choice of HTML or plain-text changelog, with overrideable HTML templates
+* Choice of HTML or plain-text changelog, with overridable HTML templates
 * Format customization
 * Sections based on tags
 * Ability to filter out certain lines (i.e. exclude merge commits), or process
