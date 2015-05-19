@@ -61,7 +61,7 @@ changelog {
     // For example, to remove '[ci skip]' from the changelog messages:
     processLines = {
         String input = it as String
-        if (input.startsWith('[ci skip] ')) {
+        if (input.contains('[ci skip] ')) {
             input = input.minus('[ci skip] ')
         }
         input
