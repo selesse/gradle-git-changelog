@@ -65,22 +65,21 @@ class GenerateChangelogTask extends DefaultTask {
         }
 
         def changelog = changelogGenerator.generateChangelog()
-        changelog = filterOrProcessLinesIfSet(changelog)
+        if (extension.includeLines || extension.processLines) {
+            changelog = filterOrProcessLines(changelog)
+        }
         return changelog
     }
 
-    private String filterOrProcessLinesIfSet(String changelog) {
-        if (extension.includeLines || extension.processLines) {
-            Iterable<String> changelogLines = Splitter.on('\n').split(changelog)
-            if (extension.includeLines) {
-                changelogLines = changelogLines.findAll extension.includeLines
-            }
-            if (extension.processLines) {
-                changelogLines = changelogLines.collect extension.processLines
-            }
-            changelog = Joiner.on('\n').join(changelogLines)
+    private String filterOrProcessLines(String changelog) {
+        Iterable<String> changelogLines = Splitter.on('\n').split(changelog)
+        if (extension.includeLines) {
+            changelogLines = changelogLines.findAll extension.includeLines
         }
-        changelog
+        if (extension.processLines) {
+            changelogLines = changelogLines.collect extension.processLines
+        }
+        Joiner.on('\n').join(changelogLines)
     }
 
     private List<String> getTagList(GitCommandExecutor gitExecutor) {
