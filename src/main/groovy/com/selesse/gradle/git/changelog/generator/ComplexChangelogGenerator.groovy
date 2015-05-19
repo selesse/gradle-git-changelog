@@ -8,8 +8,9 @@ import com.selesse.gradle.git.GitCommandExecutor
 class ComplexChangelogGenerator implements ChangelogGenerator {
     final Map<String, String> tagAndDateMap
     final GitCommandExecutor executor
+    final boolean skipFirstTag
 
-    ComplexChangelogGenerator(GitCommandExecutor executor, List<String> tags) {
+    ComplexChangelogGenerator(GitCommandExecutor executor, List<String> tags, boolean skipFirstTag) {
         this.executor = executor
         this.tagAndDateMap = tags.collectEntries {
             def tagAndDate = Splitter.on("|").omitEmptyStrings().trimResults().splitToList(it) as List<String>
@@ -18,6 +19,7 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
             }
             [(tagAndDate.get(0)): tagAndDate.get(1)]
         } as Map<String, String>
+        this.skipFirstTag = skipFirstTag
     }
 
     String generateChangelog() {
@@ -29,7 +31,9 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
 
         def dates = dateCommitMap.keySet().sort()
 
-        appendFirstCommitChangeLog(dates, dateCommitMap, tagAndDateMap, changelogs)
+        if (!skipFirstTag) {
+            appendFirstCommitChangeLog(dates, dateCommitMap, tagAndDateMap, changelogs)
+        }
 
         for (int i = 0; (i + 1) < dates.size(); i++) {
             def firstCommit = dateCommitMap.get(dates.get(i))
@@ -51,15 +55,6 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
         return Joiner.on("\n").join(reverseChangelogs)
     }
 
-    private void appendLastCommitChangelog(Map<String, String> dateCommitMap, List<String> dates, ArrayList<String> changelogs) {
-        def firstCommit = dateCommitMap.get(dates.last())
-        def secondCommit = executor.getLatestCommit()
-        def changelog = executor.getGitChangelog(firstCommit, secondCommit)
-        if (changelog.length() > 0) {
-            changelogs << getChangelogSection("Unreleased", changelog)
-        }
-    }
-
     private List appendFirstCommitChangeLog(List<String> dates, Map<String, String> dateCommitMap, Map<String,
             String> tagAndDateMap, List<String> changelogs) {
         def secondCommitDate = dates.get(0)
@@ -70,6 +65,15 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
         def sectionTitle = "${executor.getTagName(secondCommit)} (${secondCommitDate})"
         def sectionChangelog = executor.getGitChangelog(secondCommit)
         changelogs << getChangelogSection(sectionTitle, sectionChangelog)
+    }
+
+    private void appendLastCommitChangelog(Map<String, String> dateCommitMap, List<String> dates, List<String> changelogs) {
+        def firstCommit = dateCommitMap.get(dates.last())
+        def secondCommit = executor.getLatestCommit()
+        def changelog = executor.getGitChangelog(firstCommit, secondCommit)
+        if (changelog.length() > 0) {
+            changelogs << getChangelogSection("Unreleased", changelog)
+        }
     }
 
     String getChangelogSection(String sectionTitle, String sectionChangelog) {

@@ -35,7 +35,7 @@ class ComplexChangelogGeneratorTest {
         def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
         List<String> tags = executor.getTags()
 
-        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
+        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
         String generatedChangelog = changelogGenerator.generateChangelog()
 
         def changelogParser = new ChangelogParser(generatedChangelog)
@@ -70,7 +70,7 @@ class ComplexChangelogGeneratorTest {
 
         assertThat(tags).hasSize(1)
 
-        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
+        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
         String generatedChangelog = changelogGenerator.generateChangelog()
 
         def changelogParser = new ChangelogParser(generatedChangelog)
@@ -110,7 +110,7 @@ class ComplexChangelogGeneratorTest {
         def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
         List<String> tags = executor.getTags()
 
-        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags)
+        ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
         String generatedChangelog = changelogGenerator.generateChangelog()
 
         def changelogParser = new ChangelogParser(generatedChangelog)

@@ -49,6 +49,15 @@ changelog {
     // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
     commitFormat = '%s (%an)'
 
+    // The range of commits the changelog should be composed of.
+    // Default value: 'beginning' (i.e. full changelog)
+    //
+    // 'last_tag' will use all the commits since the last tag,
+    // 'beginning' will use all commits since the initial commit (default)
+    // 'xxx' will use all the tags since the 'xxx' Git reference (i.e. `since = 1.2.0` will display the changelog
+    //       since the 1.2.0 tag, excluding 1.2.0)
+    since = 'last_tag', 'beginning', 'xxx'
+
     // A closure that returns 'true' if the line should be included in the changelog.
     // Default value: accept everything, { true }
     includeLines = {

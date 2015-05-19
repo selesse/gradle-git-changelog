@@ -25,6 +25,16 @@ class GitCommandExecutor {
         )
     }
 
+    public String getLastTag() {
+        return executeCommand('git', 'describe', '--abbrev=0', '--tags')
+    }
+
+    public List<String> getTagsSince(String ref) {
+        Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(
+                executeCommand('git', 'tag', '--contains', ref)
+        )
+    }
+
     private String executeCommand(String... args) {
         if (executionContext != null) {
             args.execute(null, executionContext).text.trim()

@@ -1,5 +1,4 @@
 package com.selesse.gradle.git.changelog.tasks
-
 import com.google.common.base.Joiner
 import com.google.common.base.Splitter
 import com.selesse.gradle.git.GitCommandExecutor
@@ -8,6 +7,7 @@ import com.selesse.gradle.git.changelog.generator.ChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.ComplexChangelogGenerator
 import com.selesse.gradle.git.changelog.generator.SimpleChangelogGenerator
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
@@ -52,7 +52,7 @@ class GenerateChangelogTask extends DefaultTask {
     }
 
     String generateChangelogContent(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
-        def tags = gitExecutor.getTags()
+        List<String> tags = getTagList(extension, gitExecutor)
 
         ChangelogGenerator changelogGenerator
 
@@ -61,10 +61,16 @@ class GenerateChangelogTask extends DefaultTask {
             changelogGenerator = new SimpleChangelogGenerator(gitExecutor)
         } else {
             logger.info("{} tags were found, generating complex changelog", tags.size())
-            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags)
+            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags,
+                    !['last_tag', 'beginning'].contains(extension.since))
         }
 
         def changelog = changelogGenerator.generateChangelog()
+        changelog = filterOrProcessLinesIfSet(extension, changelog)
+        return changelog
+    }
+
+    private String filterOrProcessLinesIfSet(GitChangelogExtension extension, String changelog) {
         if (extension.includeLines || extension.processLines) {
             Iterable<String> changelogLines = Splitter.on('\n').split(changelog)
             if (extension.includeLines) {
@@ -75,6 +81,25 @@ class GenerateChangelogTask extends DefaultTask {
             }
             changelog = Joiner.on('\n').join(changelogLines)
         }
-        return changelog
+        changelog
+    }
+
+    private List<String> getTagList(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
+        def tags
+        if (extension.since == 'last_tag') {
+            def lastTag = gitExecutor.getLastTag()
+            if (lastTag.isEmpty()) {
+                throw new GradleException('"last_tag" option specified, but no tags were found')
+            }
+            tags = [lastTag]
+        } else if (extension.since == 'beginning') {
+            tags = gitExecutor.getTags()
+        } else {
+            tags = gitExecutor.getTagsSince(extension.since)
+            if (tags.isEmpty()) {
+                throw new GradleException("No tags found since '${extension.since}'")
+            }
+        }
+        tags
     }
 }
