@@ -29,6 +29,11 @@ public class GitRepositoryBuilderRunner {
         return this;
     }
 
+    public GitRepositoryBuilderRunner sleepOneSecond() throws InterruptedException {
+        Thread.sleep(1000);
+        return this;
+    }
+
     public GitRepositoryBuilderRunner createFile(String file, String contents) throws FileNotFoundException {
         addFile(file, contents);
         return this;
@@ -74,5 +79,4 @@ public class GitRepositoryBuilderRunner {
         printWriter.flush();
         printWriter.close();
     }
-
 }

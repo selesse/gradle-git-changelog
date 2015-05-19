@@ -14,6 +14,7 @@ import org.gradle.api.tasks.TaskAction
 
 class GenerateChangelogTask extends DefaultTask {
     Logger logger = Logging.getLogger(GenerateChangelogTask)
+    GitChangelogExtension extension
 
     public GenerateChangelogTask() {
         this.description = 'Generates a changelog'
@@ -22,8 +23,9 @@ class GenerateChangelogTask extends DefaultTask {
 
     @TaskAction
     def generateChangelog() {
-        def outputDirectoryFile = project.changelog.outputDirectory as File
-        def fileName = project.changelog.fileName as String
+        extension = project.extensions.changelog
+        def outputDirectoryFile = extension.outputDirectory
+        def fileName = extension.fileName
         File changelogFile = new File(outputDirectoryFile, fileName)
         outputDirectoryFile.mkdirs()
 
@@ -40,19 +42,17 @@ class GenerateChangelogTask extends DefaultTask {
     }
 
     String generateChangelogContent() {
-        GitChangelogExtension extension = project.changelog
-
         def title = extension.title
         def heading = "$title\n${'='.multiply(title.length())}\n\n"
 
         def changelogFormat = extension.commitFormat
         def gitCommandExecutor = new GitCommandExecutor(changelogFormat)
 
-        return heading + generateChangelogContent(extension, gitCommandExecutor)
+        return heading + generateChangelogContent(gitCommandExecutor)
     }
 
-    String generateChangelogContent(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
-        List<String> tags = getTagList(extension, gitExecutor)
+    String generateChangelogContent(GitCommandExecutor gitExecutor) {
+        List<String> tags = getTagList(gitExecutor)
 
         ChangelogGenerator changelogGenerator
 
@@ -61,16 +61,15 @@ class GenerateChangelogTask extends DefaultTask {
             changelogGenerator = new SimpleChangelogGenerator(gitExecutor)
         } else {
             logger.info("{} tags were found, generating complex changelog", tags.size())
-            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags,
-                    !['last_tag', 'beginning'].contains(extension.since))
+            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags, !'beginning'.equals(extension.since))
         }
 
         def changelog = changelogGenerator.generateChangelog()
-        changelog = filterOrProcessLinesIfSet(extension, changelog)
+        changelog = filterOrProcessLinesIfSet(changelog)
         return changelog
     }
 
-    private String filterOrProcessLinesIfSet(GitChangelogExtension extension, String changelog) {
+    private String filterOrProcessLinesIfSet(String changelog) {
         if (extension.includeLines || extension.processLines) {
             Iterable<String> changelogLines = Splitter.on('\n').split(changelog)
             if (extension.includeLines) {
@@ -84,7 +83,7 @@ class GenerateChangelogTask extends DefaultTask {
         changelog
     }
 
-    private List<String> getTagList(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
+    private List<String> getTagList(GitCommandExecutor gitExecutor) {
         def tags
         if (extension.since == 'last_tag') {
             def lastTag = gitExecutor.getLastTag()
