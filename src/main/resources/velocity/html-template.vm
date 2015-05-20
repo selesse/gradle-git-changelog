@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<head>
+    <title> Velocity Report </title>
+</head>
+<body>
+
+#foreach($tag in $tags)
+    <h1> $tag </h1>
+#end
+
+</body>

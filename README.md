@@ -44,11 +44,6 @@ changelog {
     // Default value: CHANGELOG.md
     fileName = "changelog.txt"
 
-    // The Git "pretty" changelog commit format.
-    // Default value: %ad%x09%s (%an), which produces:
-    // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
-    commitFormat = '%s (%an)'
-
     // The range of commits the changelog should be composed of.
     // Default value: 'beginning' (i.e. full changelog)
     // Possible values: 'beginning', 'last_tag', 'xxx'
@@ -58,6 +53,21 @@ changelog {
     // 'xxx' will use all the tags since the 'xxx' Git reference (i.e. `since = 1.2.0` will display the changelog
     //       since the 1.2.0 tag, excluding 1.2.0)
     since = 'last_tag'
+
+    // The output formats that should be generated.
+    // Default value: ['markdown']
+    // Possible values: 'html', 'markdown'. The 'html' format will use
+    //                  'velocityTemplate' as its HTML template.
+    formats = ['html', 'markdown']
+
+    // The Velocity HTML template used to generate the HTML changelog.
+    // Default value: src/main/resources/velocity/html-template.vm
+    velocityTemplate = file("velocity-template.vm")
+
+    // The Git "pretty" changelog commit format.
+    // Default value: %ad%x09%s (%an), which produces:
+    // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
+    commitFormat = '%s (%an)'
 
     // A closure that returns 'true' if the line should be included in the changelog.
     // Default value: accept everything, { true }
@@ -78,7 +88,3 @@ changelog {
     }
 }
 ```
-
-## Planned Features
-
-* Choice of HTML or plain-text changelog, with overridable HTML templates
