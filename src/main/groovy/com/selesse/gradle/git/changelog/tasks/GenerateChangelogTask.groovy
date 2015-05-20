@@ -6,12 +6,9 @@ import com.selesse.gradle.git.changelog.generator.ChangelogWriter
 import com.selesse.gradle.git.changelog.generator.HtmlChangelogWriter
 import com.selesse.gradle.git.changelog.generator.MarkdownChangelogWriter
 import org.gradle.api.DefaultTask
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 class GenerateChangelogTask extends DefaultTask {
-    Logger logger = Logging.getLogger(GenerateChangelogTask)
     GitChangelogExtension extension
 
     public GenerateChangelogTask() {

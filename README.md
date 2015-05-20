@@ -60,9 +60,14 @@ changelog {
     //                  'velocityTemplate' as its HTML template.
     formats = ['html', 'markdown']
 
-    // The Velocity HTML template used to generate the HTML changelog.
-    // Default value: src/main/resources/velocity/html-template.vm
-    velocityTemplate = file("velocity-template.vm")
+    // The Groovy HTML template used to generate the HTML changelog.
+    htmlTemplate = '''
+        html {
+            body {
+                h1 'hi mom'
+            }
+        }
+    '''
 
     // The Git "pretty" changelog commit format.
     // Default value: %ad%x09%s (%an), which produces:

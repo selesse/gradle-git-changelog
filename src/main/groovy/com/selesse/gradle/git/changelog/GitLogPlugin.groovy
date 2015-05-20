@@ -1,6 +1,5 @@
 package com.selesse.gradle.git.changelog
 
-import com.google.common.io.Resources
 import com.selesse.gradle.git.changelog.tasks.GenerateChangelogTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
@@ -30,7 +29,11 @@ class GitLogPlugin implements Plugin<Project> {
             since = 'beginning'
             commitFormat = '%ad%x09%s (%an)'
             formats = ['markdown'] as Set<String>
-            velocityTemplate = new File(Resources.getResource('velocity/html-template.vm').file)
+            htmlTemplate = '''
+                html {
+                    body {
+                    }
+                }'''
         }
 
         logger.info("Initialized with settings: ${extension}")

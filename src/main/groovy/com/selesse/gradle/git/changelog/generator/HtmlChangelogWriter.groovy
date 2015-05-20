@@ -2,52 +2,23 @@ package com.selesse.gradle.git.changelog.generator
 
 import com.selesse.gradle.git.GitCommandExecutor
 import com.selesse.gradle.git.changelog.GitChangelogExtension
-import org.apache.velocity.Template
-import org.apache.velocity.VelocityContext
-import org.apache.velocity.app.VelocityEngine
-import org.apache.velocity.runtime.RuntimeConstants
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+import groovy.text.markup.MarkupTemplateEngine
+import groovy.text.markup.TemplateConfiguration
 
 class HtmlChangelogWriter extends BaseChangelogWriter {
-    File velocityTemplate
+    String htmlTemplate
 
     HtmlChangelogWriter(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
         super(extension, gitExecutor)
-        this.velocityTemplate = extension.velocityTemplate
+        this.htmlTemplate = extension.htmlTemplate
     }
 
     @Override
     void writeChangelog(PrintStream printStream) {
-        String templateName = velocityTemplate.name
-
-        Properties velocityProperties = new Properties()
-        if (velocityTemplate.absolutePath.contains('.jar!')) {
-            velocityProperties.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
-            velocityProperties.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.name)
-            templateName = "velocity/${templateName}"
-        } else {
-            velocityProperties.setProperty(RuntimeConstants.RESOURCE_LOADER, "file")
-            velocityProperties.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, velocityTemplate.parentFile.absolutePath)
-        }
-        VelocityEngine velocityEngine = new VelocityEngine(velocityProperties)
-        velocityEngine.init()
-
-        Template template = velocityEngine.getTemplate(templateName)
-
-        VelocityContext context = getVelocityContext()
-
-        Writer writer = new StringWriter()
-        template.merge(context, writer)
-
-        printStream.println(writer.toString())
-        printStream.flush()
-    }
-
-    private VelocityContext getVelocityContext() {
-        VelocityContext context = new VelocityContext()
-
-        context.put('tags', getTagList())
-
-        return context
+        def templateConfig = new TemplateConfiguration()
+        MarkupTemplateEngine engine = new MarkupTemplateEngine(this.class.classLoader, templateConfig)
+        def template = engine.createTemplate htmlTemplate
+        def model = [:]
+        template.make(model).writeTo(new PrintWriter(printStream))
     }
 }

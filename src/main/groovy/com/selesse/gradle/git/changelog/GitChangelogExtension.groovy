@@ -12,7 +12,7 @@ class GitChangelogExtension {
 
     String commitFormat
     Set<String> formats
-    File velocityTemplate
+    String htmlTemplate
 
     Closure includeLines
     Closure processLines
