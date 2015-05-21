@@ -56,8 +56,7 @@ changelog {
 
     // The output formats that should be generated.
     // Default value: ['markdown']
-    // Possible values: 'html', 'markdown'. The 'html' format will use
-    //                  'velocityTemplate' as its HTML template.
+    // Possible values: 'html', 'markdown'.
     formats = ['html', 'markdown']
 
     // The Groovy HTML template used to generate the HTML changelog.
