@@ -1,4 +1,5 @@
 package com.selesse.gradle.git.changelog.generator
+
 import com.selesse.gitwrapper.fixtures.GitRepositoryBuilder
 import com.selesse.gradle.git.changelog.tasks.GenerateChangelogTask
 import org.gradle.api.Project
@@ -7,7 +8,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import static com.selesse.gradle.git.changelog.generator.BaseWriterTest.*;
+import static com.selesse.gradle.git.changelog.generator.BaseWriterTest.*
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HtmlChangelogWriterTest {
     Project project
@@ -36,7 +38,6 @@ class HtmlChangelogWriterTest {
 
         String changelogContent = writeHtmlChangelog(createHtmlWriter(project, temporaryGitDirectory))
 
-        then:
-        changelogContent.contains('<!DOCTYPE html>')
+        assertThat(changelogContent).contains('<html>')
     }
 }
