@@ -13,7 +13,11 @@ buildscript {
 apply plugin: 'com.selesse.git.changelog'
 
 changelog {
-    title = 'Sample Plugin Implementation'
+    title = 'Gradle Git Changelog'
     outputDirectory = file("$projectDir")
     formats = ['html', 'markdown']
+    commitFormat = '* %s (%an)'
+    includeLines {
+        !it.contains("Merge ") && !it.contains("[ci skip]")
+    }
 }

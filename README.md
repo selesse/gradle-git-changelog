@@ -4,6 +4,8 @@
 
 Gradle plugin for generating a changelog based on a Git commit history.
 
+[See recent changes.](CHANGELOG.md)
+
 **Note**: This plugin should not be considered stable until 1.0.
 
 ## Usage
