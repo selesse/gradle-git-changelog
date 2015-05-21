@@ -27,24 +27,4 @@ class MarkdownChangelogWriter extends BaseChangelogWriter {
         return heading + generateChangelogContent()
     }
 
-    String generateChangelogContent() {
-        List<String> tags = getTagList()
-
-        ChangelogGenerator changelogGenerator
-
-        if (tags.size() == 0) {
-            logger.info("No tags found, generating basic changelog")
-            changelogGenerator = new SimpleChangelogGenerator(gitExecutor)
-        } else {
-            logger.info("{} tags were found, generating complex changelog", tags.size())
-            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags, !'beginning'.equals(extension.since))
-        }
-
-        def changelog = changelogGenerator.generateChangelog()
-        if (extension.includeLines || extension.processLines) {
-            changelog = filterOrProcessLines(changelog)
-        }
-        return changelog
-    }
-
 }

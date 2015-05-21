@@ -29,11 +29,7 @@ class GitLogPlugin implements Plugin<Project> {
             since = 'beginning'
             commitFormat = '%ad%x09%s (%an)'
             formats = ['markdown'] as Set<String>
-            htmlTemplate = '''
-                html {
-                    body {
-                    }
-                }'''
+            htmlTemplate = this.class.classLoader.getResource('html-template.tpl').text
         }
 
         logger.info("Initialized with settings: ${extension}")

@@ -60,13 +60,8 @@ changelog {
     formats = ['html', 'markdown']
 
     // The Groovy HTML template used to generate the HTML changelog.
-    htmlTemplate = '''
-        html {
-            body {
-                h1 'hi mom'
-            }
-        }
-    '''
+    // See http://docs.groovy-lang.org/latest/html/documentation/template-engines.html
+    htmlTemplate = file("$projectDir/htmlTemplate").text
 
     // The Git "pretty" changelog commit format.
     // Default value: %ad%x09%s (%an), which produces:

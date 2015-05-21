@@ -23,7 +23,7 @@ class ChangelogParser {
                 .omitEmptyStrings()
                 .splitToList(changelogString)
 
-        def currentTag = changelog.get(0)
+        def currentTag = 'None'
 
         for (int i = 0; i < changelog.size(); i++) {
             def currentLine = changelog.get(i)

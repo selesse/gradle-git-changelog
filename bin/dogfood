@@ -6,6 +6,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 cd $DIR/..
 
+[ -d "$HOME/.m2/repository/com/selesse/gradle-git-changelog/" ] && \
+        (echo "--- Removing m2 cache ---"; rm -rf "$HOME/.m2/repository/com/selesse/gradle-git-changelog")
 echo "--- Building plugin JAR ---"
 # Build the JAR, upload it to the local Maven directory
 gradlew clean install -q
@@ -15,3 +17,4 @@ cd samples
 # Use the JAR to generate a changelog
 gradle generateChangelog
 cat CHANGELOG.md
+echo ""
