@@ -13,9 +13,7 @@ Gradle plugin for generating a changelog based on a Git commit history.
 ```
 buildscript {
     repositories {
-        maven {
-            mavenCentral()
-        }
+        mavenCentral()
     }
     dependencies {
         classpath 'com.selesse:gradle-git-changelog:0.1.0'
