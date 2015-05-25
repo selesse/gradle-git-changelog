@@ -18,6 +18,7 @@ class GitLogPluginTest {
         Project project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'base'
         project.pluginManager.apply 'com.selesse.git.changelog'
+        project.evaluate()
 
         assertThat(project.tasks.assemble.dependsOn).contains(project.tasks.generateChangelog)
         assertThat(project.extensions.changelog.outputDirectory.absolutePath.replace("\\", "/") as String).endsWith('build')
@@ -25,22 +26,25 @@ class GitLogPluginTest {
 
     @Test public void testProcessResources_dependsOnGenerateChangelog() {
         Project project = ProjectBuilder.builder().build()
+        project.pluginManager.apply 'com.selesse.git.changelog'
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'com.selesse.git.changelog'
+        project.evaluate()
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
         assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
 
         project = ProjectBuilder.builder().build()
+        project.pluginManager.apply 'com.selesse.git.changelog'
         project.pluginManager.apply 'groovy'
-        project.pluginManager.apply 'com.selesse.git.changelog'
+        project.evaluate()
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
         assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
 
         project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'war'
         project.pluginManager.apply 'com.selesse.git.changelog'
+        project.pluginManager.apply 'war'
+        project.evaluate()
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
         assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')

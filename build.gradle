@@ -6,6 +6,8 @@ apply plugin: 'com.bmuschko.nexus'
 group = 'com.selesse'
 version '0.2.0-SNAPSHOT'
 
+sourceCompatibility = 1.6
+
 buildscript {
     repositories {
         jcenter()
