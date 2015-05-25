@@ -1,6 +1,13 @@
 Gradle Git Changelog
 ====================
 
+v0.1.1 (Mon May 25 19:48:24 2015 -0400)
+---------------------------------------
+* Release 0.1.1 (Alex Selesse)
+* [BUG] Fix plugin not working if Java/Base plugins are applied **after** this plugin (Alex Selesse)
+* [BUG] Make plugin runnable on JDK 6+ (Alex Selesse)
+* Set to 0.1.1-SNAPSHOT (Alex Selesse)
+
 v0.1.0 (Thu May 21 18:40:51 2015 -0400)
 ---------------------------------------
 * Update README to reflect 1.0 (Alex Selesse)
