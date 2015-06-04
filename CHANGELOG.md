@@ -1,6 +1,11 @@
 Gradle Git Changelog
 ====================
 
+v0.1.2 (Thu Jun 4 19:23:36 2015 -0400)
+--------------------------------------
+* [BUG] OutputDirectory on Java plugin was ignored (Alex Selesse)
+* Set version to 0.1.2 (Alex Selesse)
+
 v0.1.1 (Mon May 25 19:48:24 2015 -0400)
 ---------------------------------------
 * Release 0.1.1 (Alex Selesse)
