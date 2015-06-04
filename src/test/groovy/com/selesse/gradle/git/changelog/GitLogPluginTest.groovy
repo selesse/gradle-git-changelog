@@ -21,7 +21,7 @@ class GitLogPluginTest {
         project.evaluate()
 
         assertThat(project.tasks.assemble.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory.absolutePath.replace("\\", "/") as String).endsWith('build')
+        assertThat(getOutputDirectoryPath(project)).endsWith('build')
     }
 
     @Test public void testProcessResources_dependsOnGenerateChangelog() {
@@ -48,6 +48,19 @@ class GitLogPluginTest {
 
         assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
         assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
+    }
+
+    @Test public void testSettingOutputDirectory_appliesToJavaPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        project.pluginManager.apply 'com.selesse.git.changelog'
+        project.pluginManager.apply 'java'
+
+        def arbitraryOutputDirectory = project.buildDir
+        project.extensions.changelog.outputDirectory = arbitraryOutputDirectory
+        project.evaluate()
+
+        assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
+        assertThat(project.extensions.changelog.outputDirectory).isEqualTo(arbitraryOutputDirectory)
     }
 
     private String getOutputDirectoryPath(Project project) {

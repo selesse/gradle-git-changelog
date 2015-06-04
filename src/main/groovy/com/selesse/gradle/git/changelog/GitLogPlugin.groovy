@@ -20,7 +20,6 @@ class GitLogPlugin implements Plugin<Project> {
 
         extension.with {
             title = project.name
-            outputDirectory = project.buildDir
             fileName = 'CHANGELOG.md'
             since = 'beginning'
             commitFormat = '%ad%x09%s (%an)'
@@ -43,11 +42,16 @@ class GitLogPlugin implements Plugin<Project> {
                     processResources.dependsOn(task)
 
                     logger.debug("Setting destination directory to {}", processResources.destinationDir)
-                    project.extensions.changelog.outputDirectory = processResources.destinationDir
+                    if (project.extensions.changelog.outputDirectory == null) {
+                        project.extensions.changelog.outputDirectory = processResources.destinationDir
+                    }
                 }
             }
 
             if (project.plugins.findPlugin(JavaPlugin) == null) {
+                if (project.extensions.changelog.outputDirectory == null) {
+                    project.extensions.changelog.outputDirectory = project.buildDir
+                }
                 project.plugins.withType(BasePlugin) {
                     logger.debug("Configuring Base Plugin")
                     Task assembleTask = project.tasks.getByName("assemble") as Task
