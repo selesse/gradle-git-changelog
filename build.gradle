@@ -1,7 +1,6 @@
 apply plugin: 'base'
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
-apply plugin: 'com.bmuschko.nexus'
 
 group = 'com.selesse'
 version '0.2.0-SNAPSHOT'
@@ -38,45 +37,4 @@ clean {
     delete 'repo'
 }
 
-modifyPom {
-    project {
-        name 'Gradle Git Changelog plugin'
-        description 'Generate Git changelogs for Gradle projects'
-        url 'https://github.com/selesse/gradle-git-changelog'
-        inceptionYear '2015'
-
-        scm {
-            url 'https://github.com/selesse/gradle-git-changelog'
-            connection 'scm:https://selesse@github.com/selesse/gradle-git-changelog.git'
-            developerConnection 'scm:git://github.com/selesse/gradle-git-changelog.git'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'selesse'
-                name 'Alex Selesse'
-                email 'alex@selesse.com'
-            }
-        }
-    }
-}
-
-extraArchive {
-    sources = true
-    tests = false
-    javadoc = true
-}
-
-nexus {
-    sign = true
-    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
-}
+apply from: rootProject.file("gradle/maven-publish.gradle")
