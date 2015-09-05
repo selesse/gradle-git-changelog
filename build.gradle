@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 
 group = 'com.selesse'
-version '0.2.0-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 
 sourceCompatibility = 1.6
 
@@ -11,9 +11,13 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
     dependencies {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.1'
     }
 }
 
@@ -38,3 +42,4 @@ clean {
 }
 
 apply from: rootProject.file("gradle/maven-publish.gradle")
+apply from: rootProject.file("gradle/gradle-publish.gradle")

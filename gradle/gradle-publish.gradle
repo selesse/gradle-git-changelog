@@ -1,0 +1,15 @@
+apply plugin: 'com.gradle.plugin-publish'
+
+pluginBundle {
+    website = 'http://github.com/selesse/gradle-git-changelog'
+    vcsUrl = 'http://github.com/selesse/gradle-git-changelog'
+    description = "Plugin to generate a changelog based on the project's Git history"
+    tags = ['git', 'changelog']
+
+    plugins {
+        gitChangelogPlugin {
+            id = 'com.selesse.git.changelog'
+            displayName = 'Gradle Git Changelog plugin'
+        }
+    }
+}
