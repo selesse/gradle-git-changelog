@@ -12,7 +12,7 @@ class HtmlChangelogWriter extends BaseChangelogWriter {
 
     HtmlChangelogWriter(GitChangelogExtension extension, GitCommandExecutor gitExecutor) {
         super(extension, gitExecutor)
-        this.htmlTemplate = extension.htmlTemplate
+        this.htmlTemplate = extension.htmlConvention.template
     }
 
     @Override

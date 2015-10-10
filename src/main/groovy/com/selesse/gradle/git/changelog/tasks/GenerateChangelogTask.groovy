@@ -1,5 +1,6 @@
 package com.selesse.gradle.git.changelog.tasks
 
+import com.google.common.base.MoreObjects
 import com.selesse.gradle.git.GitCommandExecutor
 import com.selesse.gradle.git.changelog.GitChangelogExtension
 import com.selesse.gradle.git.changelog.generator.ChangelogWriter
@@ -27,12 +28,11 @@ class GenerateChangelogTask extends DefaultTask {
             String format = it as String
 
             ChangelogWriter changelogWriter
-            def gitExecutor = new GitCommandExecutor(extension.commitFormat)
             if (format == "markdown") {
                 format = "md"
-                changelogWriter = new MarkdownChangelogWriter(extension, gitExecutor)
+                changelogWriter = createMarkdownChangelogWriter(extension)
             } else {
-                changelogWriter = new HtmlChangelogWriter(extension, gitExecutor)
+                changelogWriter = createHtmlChangelogWriter(extension)
             }
 
             String fileName = extension.fileName
@@ -43,5 +43,21 @@ class GenerateChangelogTask extends DefaultTask {
 
             changelogWriter.writeChangelog(new PrintStream(new FileOutputStream(changelogFile)))
         }
+    }
+
+    static def createMarkdownChangelogWriter(GitChangelogExtension extension) {
+        String commitFormat = MoreObjects.firstNonNull(
+                extension.markdownConvention.commitFormat, extension.commitFormat
+        )
+        def gitExecutor = new GitCommandExecutor(commitFormat)
+        return new MarkdownChangelogWriter(extension, gitExecutor)
+    }
+
+    static def createHtmlChangelogWriter(GitChangelogExtension extension) {
+        String commitFormat = MoreObjects.firstNonNull(
+                extension.htmlConvention.commitFormat, extension.commitFormat
+        )
+        def gitExecutor = new GitCommandExecutor(commitFormat)
+        return new HtmlChangelogWriter(extension, gitExecutor)
     }
 }

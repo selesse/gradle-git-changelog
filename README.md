@@ -59,14 +59,28 @@ changelog {
     // Possible values: 'html', 'markdown'.
     formats = ['html', 'markdown']
 
-    // The Groovy HTML template used to generate the HTML changelog.
-    // See http://docs.groovy-lang.org/latest/html/documentation/template-engines.html
-    htmlTemplate = file("$projectDir/htmlTemplate").text
 
     // The Git "pretty" changelog commit format.
     // Default value: %ad%x09%s (%an), which produces:
     // Thu May 7 20:10:33 2015 -0400	Initial commit (Alex Selesse)
     commitFormat = '%s (%an)'
+
+    // Specifies a commit format for Markdown.
+    // Default value: '* %s (%an)', which produces:
+    // * Initial commit (Alex Selesse)
+    markdown {
+        commitFormat = '* %s (%an)'
+    }
+
+    // Specifies a commit format for the HTML template.
+    // Default value: see commitFormat
+    html {
+        commitFormat = '%s (%an)'
+
+        // The Groovy HTML template used to generate the HTML changelog.
+        // See http://docs.groovy-lang.org/latest/html/documentation/template-engines.html
+        template = file("$projectDir/htmlTemplate").text
+    }
 
     // A closure that returns 'true' if the line should be included in the changelog.
     // Default value: accept everything, { true }

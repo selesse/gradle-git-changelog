@@ -16,8 +16,16 @@ changelog {
     title = 'Gradle Git Changelog'
     outputDirectory = file("$projectDir")
     formats = ['html', 'markdown']
-    commitFormat = '* %s (%an)'
+    commitFormat = '%s (%an)'
     includeLines {
         !it.contains("Merge ") && !it.contains("[ci skip]")
+    }
+
+    markdown {
+        commitFormat = '* %s (%an)'
+    }
+
+    html {
+        template = file("$projectDir/sample-html.tpl").text
     }
 }
