@@ -1,6 +1,20 @@
 Gradle Git Changelog
 ====================
 
+v0.2.0 (Sat Oct 10 18:12:57 2015 -0400)
+---------------------------------------
+* Bump version to 0.2.0 (Alex Selesse)
+* Add sample-html (Alex Selesse)
+* Allow different commit formats for html/markdown (Alex Selesse)
+* Publish plugin to plugins.gradle.org (Alex Selesse)
+* Extract Maven publish into separate file (Alex Selesse)
+* Update Gradle wrapper to 2.6 (Alex Selesse)
+* Update CHANGELOG for 0.1.2 (Alex Selesse)
+* Update CHANGELOG for 0.1.1 (Alex Selesse)
+* Fix broken block (Alex Selesse)
+* Prepare for 0.2.0 (Alex Selesse)
+* Generate changelog for Gradle Git Changelog (Alex Selesse)
+
 v0.1.2 (Thu Jun 4 19:23:36 2015 -0400)
 --------------------------------------
 * [BUG] OutputDirectory on Java plugin was ignored (Alex Selesse)
