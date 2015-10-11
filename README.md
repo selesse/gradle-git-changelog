@@ -16,11 +16,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.selesse:gradle-git-changelog:0.1.+'
+        classpath 'com.selesse:gradle-git-changelog:0.2.0'
     }
 }
 
 apply plugin: 'com.selesse.git.changelog'
+```
+
+Build script snippet for new, incubating, [plugin mechanism](https://docs.gradle.org/current/userguide/plugins.html) introduced in Gradle 2.1 for [gradle-git-changelog](https://plugins.gradle.org/plugin/com.selesse.git.changelog):
+
+```
+plugins {
+  id "com.selesse.git.changelog" version "0.2.0"
+}
 ```
 
 This will automatically hook the `generateChangelog` task into the
