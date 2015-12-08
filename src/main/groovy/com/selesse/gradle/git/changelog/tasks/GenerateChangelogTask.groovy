@@ -19,8 +19,6 @@ class GenerateChangelogTask extends DefaultTask {
 
     @TaskAction
     def generateChangelog() {
-        extension = project.extensions.changelog
-
         def outputDirectoryFile = extension.outputDirectory
         outputDirectoryFile.mkdirs()
 

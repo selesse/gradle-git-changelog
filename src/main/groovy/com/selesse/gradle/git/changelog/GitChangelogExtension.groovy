@@ -3,6 +3,7 @@ package com.selesse.gradle.git.changelog
 import com.selesse.gradle.git.changelog.convention.HtmlConvention
 import com.selesse.gradle.git.changelog.convention.MarkdownConvention
 import groovy.transform.ToString
+import org.gradle.api.Project
 
 @ToString
 class GitChangelogExtension {
@@ -20,6 +21,11 @@ class GitChangelogExtension {
 
     Closure includeLines
     Closure processLines
+
+    public GitChangelogExtension(Project project) {
+        this.title = project.name
+        this.outputDirectory = project.buildDir
+    }
 
     def changelog(Closure closure) {
         closure.delegate = this
