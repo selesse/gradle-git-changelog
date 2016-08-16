@@ -20,7 +20,6 @@ class GitLogPlugin implements Plugin<Project> {
 
         extension.with {
             title = project.name
-            outputDirectory = project.buildDir
         }
 
         logger.info("Initialized with settings: ${extension}")
@@ -33,12 +32,15 @@ class GitLogPlugin implements Plugin<Project> {
             project.plugins.withType(JavaPlugin) {
                 logger.info("Configuring Java plugin")
                 Task processResources = project.tasks.processResources
+
                 if (processResources != null) {
                     logger.debug("Making assembleTask depend on ${task.name}")
                     processResources.dependsOn(task)
 
-                    logger.debug("Setting destination directory to {}", processResources.destinationDir)
-                    project.extensions.changelog.outputDirectory = processResources.destinationDir
+                    if (extension.outputDirectory == null) {
+                        logger.debug("Setting destination directory to {}", processResources.destinationDir)
+                        project.extensions.changelog.outputDirectory = processResources.destinationDir
+                    }
                 }
             }
 
