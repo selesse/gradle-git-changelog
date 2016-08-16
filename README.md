@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.selesse:gradle-git-changelog:0.2.0'
+        classpath 'com.selesse:gradle-git-changelog:0.2.+'
     }
 }
 
@@ -27,7 +27,7 @@ Build script snippet for new, incubating, [plugin mechanism](https://docs.gradle
 
 ```
 plugins {
-  id "com.selesse.git.changelog" version "0.2.0"
+    id 'com.selesse.git.changelog' version '0.2.+'
 }
 ```
 
