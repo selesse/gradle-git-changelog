@@ -21,7 +21,7 @@ class GenerateChangelogTask extends DefaultTask {
     def generateChangelog() {
         extension = project.extensions.changelog
 
-        def outputDirectoryFile = extension.outputDirectory
+        def outputDirectoryFile = extension.outputDirectory ?: project.buildDir
         outputDirectoryFile.mkdirs()
 
         extension.formats.each {
