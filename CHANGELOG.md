@@ -1,6 +1,12 @@
 Gradle Git Changelog
 ====================
 
+v0.2.1 (Mon Aug 15 21:58:24 2016 -0400)
+---------------------------------------
+* Bump to version 0.2.1 (Alex Selesse)
+* [BUG] Fix OutputDirectory not being applied on Java plugin (Alex Selesse)
+* Bump to 0.2.1-SNAPSHOT (Alex Selesse)
+
 v0.2.0 (Sat Oct 10 18:12:57 2015 -0400)
 ---------------------------------------
 * Bump version to 0.2.0 (Alex Selesse)
