@@ -1,6 +1,5 @@
 package com.selesse.gradle.git.changelog
 
-import com.google.common.io.Files
 import com.selesse.gradle.git.changelog.tasks.GenerateChangelogTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -56,20 +55,7 @@ class GitLogPluginTest {
         assertThat(getOutputDirectoryPath(project)).endsWith('build/resources/main')
     }
 
-    @Test public void testSettingOutputDirectory_appliesToJavaPlugin() {
-        Project project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'com.selesse.git.changelog'
-        project.pluginManager.apply 'java'
-
-        def arbitraryOutputDirectory = Files.createTempDir()
-        project.extensions.changelog.outputDirectory = arbitraryOutputDirectory
-        project.evaluate()
-
-        assertThat(project.tasks.processResources.dependsOn).contains(project.tasks.generateChangelog)
-        assertThat(project.extensions.changelog.outputDirectory).isEqualTo(arbitraryOutputDirectory)
-    }
-
     private String getOutputDirectoryPath(Project project) {
-        project.extensions.changelog.outputDirectory.absolutePath.replace("\\", "/") as String
+        project.changelog.outputDirectory.absolutePath.replace("\\", "/") as String
     }
 }
