@@ -35,6 +35,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
     testCompile 'org.assertj:assertj-core:1.7.1'
+    testCompile 'commons-io:commons-io:2.5'
 }
 
 clean {

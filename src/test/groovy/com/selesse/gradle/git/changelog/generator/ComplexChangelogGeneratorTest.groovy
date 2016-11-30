@@ -11,16 +11,16 @@ import org.junit.Test
 import static org.assertj.core.api.Assertions.assertThat
 
 class ComplexChangelogGeneratorTest {
-    File temporaryGitDirectory
+    GitRepositoryBuilder repository
 
     @After public void tearDown() {
-        if (temporaryGitDirectory != null && temporaryGitDirectory.isDirectory()) {
-            temporaryGitDirectory.deleteDir()
+        if (repository != null) {
+            repository.cleanUp()
         }
     }
 
     @Test public void testComplexChangelog_whenOneTagIsThere() {
-        GitRepositoryBuilder repository =
+        repository =
                 GitRepositoryBuilder.create()
                     .runCommand('git init')
                     .runCommand('git', 'config', 'user.name', 'Test Account')
@@ -30,9 +30,7 @@ class ComplexChangelogGeneratorTest {
                     .runCommand('git tag v0.1.0')
                     .build()
 
-        temporaryGitDirectory = repository.getDirectory()
-
-        def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
+        def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
         List<String> tags = executor.getTags()
 
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
@@ -52,7 +50,7 @@ class ComplexChangelogGeneratorTest {
     }
 
     @Test public void testComplexChangelog_withAnAnnotatedTag_usesTheAnnotatedTagDate() {
-        GitRepositoryBuilder repository =
+        repository =
                 GitRepositoryBuilder.create()
                         .runCommand('git init')
                         .runCommand('git', 'config', 'user.name', 'Test Account')
@@ -63,9 +61,7 @@ class ComplexChangelogGeneratorTest {
                         .runCommand('git', 'tag', '-a', 'v0.1.0-a', '-m', 'This is an annotated tag')
                         .build()
 
-        temporaryGitDirectory = repository.getDirectory()
-
-        def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
+        def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
         List<String> tags = executor.getTags()
 
         assertThat(tags).hasSize(1)
@@ -88,7 +84,7 @@ class ComplexChangelogGeneratorTest {
     }
 
     @Test public void testComplexChangelog_withUnreleasedAndAnnotatedAndUnannotatedTags() {
-        GitRepositoryBuilder repository =
+        repository =
                 GitRepositoryBuilder.create()
                         .runCommand('git init')
                         .runCommand('git', 'config', 'user.name', 'Test Account')
@@ -105,9 +101,7 @@ class ComplexChangelogGeneratorTest {
                         .runCommand('git', 'commit', '-m', 'Changed my mind - no contributors')
                         .build()
 
-        temporaryGitDirectory = repository.getDirectory()
-
-        def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
+        def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
         List<String> tags = executor.getTags()
 
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
@@ -140,7 +134,7 @@ class ComplexChangelogGeneratorTest {
         assertThat(dateOccurredInLastDay(date)).isTrue()
     }
 
-    boolean dateOccurredInLastDay(String dateFormattedString) {
+    static boolean dateOccurredInLastDay(String dateFormattedString) {
         Date commitDate = new FlexibleDateParser().parseDate(dateFormattedString)
         // This assertion is important: an annotated tag date should take precedence over a commit date
         TimeCategory.minus(new Date(), commitDate).days <= 1
