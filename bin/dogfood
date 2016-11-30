@@ -10,7 +10,7 @@ cd $DIR/..
         (echo "--- Removing m2 cache ---"; rm -rf "$HOME/.m2/repository/com/selesse/gradle-git-changelog")
 echo "--- Building plugin JAR ---"
 # Build the JAR, upload it to the local Maven directory
-gradlew clean install -q
+./gradlew clean install -q
 
 echo "--- Using plugin JAR to generate a changelog ---"
 cd samples
