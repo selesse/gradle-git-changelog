@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk6
+- openjdk7
 after_success:
 - ".buildscript/deploy_snapshot.sh"
 env:
