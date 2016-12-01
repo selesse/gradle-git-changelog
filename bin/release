@@ -11,11 +11,11 @@ main() {
     set_release_version_in_build
     commit_release_version
     tag_it
+    prompt_for_release
     set_snapshot_version_in_build
     generate_changelog
     commit_snapshot_version
     prompt_for_push
-    prompt_for_release
 }
 
 extract_version_info() {
@@ -43,6 +43,15 @@ tag_it() {
     git tag -a "v${version_without_snapshot}" -m "Gradle Git Changelog v${version_without_snapshot}"
 }
 
+prompt_for_release() {
+    echo "Publishing changes to Gradle/Sonatype"
+    read -rp "Proceed? (y/n) " proceed
+
+    if [ "$proceed" == "y" ] ; then
+        ./gradlew clean sign uploadArchives publishPlugins --no-daemon
+    fi
+}
+
 set_snapshot_version_in_build() {
     gsed -i "s/${version_without_snapshot}/${new_version_with_snapshot}/" build.gradle
     gsed -i "s/${version_with_snapshot}/${new_version_with_snapshot}/" samples/build.gradle
@@ -63,16 +72,7 @@ prompt_for_push() {
     read -rp "Proceed? (y/n) " proceed
 
     if [ "$proceed" == "y" ] ; then
-        git push origin master
-    fi
-}
-
-prompt_for_release() {
-    echo "Publishing changes to Gradle/Sonatype"
-    read -rp "Proceed? (y/n) " proceed
-
-    if [ "$proceed" == "y" ] ; then
-        ./gradlew clean sign uploadArchives publishPlugins --no-daemon
+        git push origin master --tags
     fi
 }
 
