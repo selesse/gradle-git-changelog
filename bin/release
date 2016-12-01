@@ -6,4 +6,74 @@ PROJECT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
 cd "${PROJECT_DIR}"
 
-./gradlew clean sign uploadArchives publishPlugins --no-daemon
+main() {
+    extract_version_info
+    set_release_version_in_build
+    commit_release_version
+    tag_it
+    set_snapshot_version_in_build
+    generate_changelog
+    commit_snapshot_version
+    prompt_for_push
+    prompt_for_release
+}
+
+extract_version_info() {
+    version_with_snapshot="$(./gradlew -q getVersion)"
+    version_without_snapshot="$(./gradlew -q getVersion | sed 's/-SNAPSHOT//g')"
+
+    IFS='.' read -ra VERSION <<< "$version_with_snapshot"
+    major=${VERSION[0]}
+    minor=${VERSION[1]}
+
+    minor_incremented=$((minor + 1))
+    new_version_with_snapshot="$major.${minor_incremented}.0-SNAPSHOT"
+}
+
+set_release_version_in_build() {
+    gsed -i 's/-SNAPSHOT//g' build.gradle
+}
+
+commit_release_version() {
+    git add build.gradle
+    git commit -m "Gradle Git Changelog ${version_without_snapshot}"
+}
+
+tag_it() {
+    git tag -a "v${version_without_snapshot}" -m "Gradle Git Changelog v${version_without_snapshot}"
+}
+
+set_snapshot_version_in_build() {
+    gsed -i "s/${version_without_snapshot}/${new_version_with_snapshot}/" build.gradle
+    gsed -i "s/${version_with_snapshot}/${new_version_with_snapshot}/" samples/build.gradle
+}
+
+generate_changelog() {
+    ./bin/dogfood
+    ./bin/update-changelog
+}
+
+commit_snapshot_version() {
+    git add build.gradle samples/build.gradle CHANGELOG.md
+    git commit -m "Prepare version ${new_version_with_snapshot}"
+}
+
+prompt_for_push() {
+    echo "Pushing changes to origin"
+    read -rp "Proceed? (y/n) " proceed
+
+    if [ "$proceed" == "y" ] ; then
+        git push origin master
+    fi
+}
+
+prompt_for_release() {
+    echo "Publishing changes to Gradle/Sonatype"
+    read -rp "Proceed? (y/n) " proceed
+
+    if [ "$proceed" == "y" ] ; then
+        ./gradlew clean sign uploadArchives publishPlugins --no-daemon
+    fi
+}
+
+main
