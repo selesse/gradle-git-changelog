@@ -1,6 +1,29 @@
 Gradle Git Changelog
 ====================
 
+v0.3.0 (Wed Nov 30 23:24:58 2016 -0500)
+---------------------------------------
+* Gradle Git Changelog 0.3.0 (Alex Selesse)
+* Make release script do everything (Alex Selesse)
+* Add getVersion task (Alex Selesse)
+* Properly specify task inputs and outputs (Alex Selesse)
+* Split GitLogFunctionalTest into Base, Java (Alex Selesse)
+* Fix Git "user.email" and add stderr to GitRepositoryBuilderRunner (Alex Selesse)
+* Move to Java 7 (Alex Selesse)
+* Clean build.gradle (and dependencies) (Alex Selesse)
+* Improve tests (Alex Selesse)
+* Add rudimentary "update-changelog" script (Alex Selesse)
+* Fix compilation issues (Alex Selesse)
+* Make template use ul+li instead of just li (Alex Selesse)
+* Fix script assuming PATH=$(pwd) (Alex Selesse)
+* Bump plugin-publish-plugin version (Alex Selesse)
+* Bump to Gradle 3.2 (Alex Selesse)
+* Add release script (Alex Selesse)
+* Update README to be semantic versioning friendly (Alex Selesse)
+* Update CHANGELOG (Alex Selesse)
+* Updated class dependency and plugin DSL (thatsIch)
+* Prepare 0.3.0-SNAPSHOT (Alex Selesse)
+
 v0.2.1 (Mon Aug 15 21:58:24 2016 -0400)
 ---------------------------------------
 * Bump to version 0.2.1 (Alex Selesse)

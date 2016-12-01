@@ -4,7 +4,7 @@ apply plugin: 'java-gradle-plugin'
 sourceCompatibility = 1.7
 
 group = 'com.selesse'
-version = '0.3.0'
+version = '0.4.0-SNAPSHOT'
 
 buildscript {
     repositories {
