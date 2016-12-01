@@ -1,6 +1,5 @@
 package com.selesse.gradle.git.changelog.functional
 
-import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
@@ -24,11 +23,7 @@ class GitLogBaseFunctionalTest extends Specification {
         """
 
         when:
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('generateChangelog')
-                .withPluginClasspath()
-                .build()
+        def result = ProjectRunner.buildGenerateChangelog(testProjectDir.root)
 
         then:
         new File(testProjectDir.root, "build/CHANGELOG.md").isFile()
@@ -48,11 +43,7 @@ class GitLogBaseFunctionalTest extends Specification {
         """
 
         when:
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('generateChangelog')
-                .withPluginClasspath()
-                .build()
+        def result = ProjectRunner.buildGenerateChangelog(testProjectDir.root)
 
         then:
         new File(testProjectDir.root, "some/nested/structure/CHANGELOG.md").isFile()

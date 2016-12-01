@@ -33,9 +33,9 @@ class HtmlChangelogWriterTest {
 
     @Test public void testDefaultTemplateIsUsed_withNoTags() {
         GitRepositoryBuilder repository = createGitRepositoryBuilderRunner().build()
-        temporaryGitDirectory = repository.getDirectory()
+        project.evaluate()
 
-        String htmlChangelog = writeHtmlChangelog(createHtmlWriter(project, temporaryGitDirectory))
+        String htmlChangelog = writeHtmlChangelog(createHtmlWriter(project, repository.directory))
 
         def html = new XmlSlurper(false, false, true).parseText(htmlChangelog)
 
@@ -60,9 +60,9 @@ class HtmlChangelogWriterTest {
                 createGitRepositoryBuilderRunner()
                     .runCommand('git tag v1.0')
                     .build()
-        temporaryGitDirectory = repository.getDirectory()
+        project.evaluate()
 
-        String htmlChangelog = writeHtmlChangelog(createHtmlWriter(project, temporaryGitDirectory))
+        String htmlChangelog = writeHtmlChangelog(createHtmlWriter(project, repository.directory))
 
         def html = new XmlSlurper(false, false, true).parseText(htmlChangelog)
 

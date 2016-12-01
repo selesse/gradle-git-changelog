@@ -33,6 +33,7 @@ class MarkdownChangelogWriterTest extends Specification {
         def temporaryGitDirectory = repository.getDirectory()
 
         project.extensions.changelog.includeLines = { !it.contains('[ci skip]') }
+        project.evaluate()
         String changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
 
         then:
@@ -51,6 +52,7 @@ class MarkdownChangelogWriterTest extends Specification {
             }
             input
         }
+        project.evaluate()
         String changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
 
         then:
@@ -76,6 +78,7 @@ class MarkdownChangelogWriterTest extends Specification {
 
         def temporaryGitDirectory = repository.getDirectory()
         project.extensions.changelog.since = 'last_tag'
+        project.evaluate()
         String changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
 
         then:
@@ -87,6 +90,7 @@ class MarkdownChangelogWriterTest extends Specification {
 
         when:
         project.extensions.changelog.since = '0.5'
+        project.evaluate()
         changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
 
         then:

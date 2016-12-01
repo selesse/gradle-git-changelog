@@ -7,45 +7,59 @@ import com.selesse.gradle.git.changelog.generator.ChangelogWriter
 import com.selesse.gradle.git.changelog.generator.HtmlChangelogWriter
 import com.selesse.gradle.git.changelog.generator.MarkdownChangelogWriter
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
 
 class GenerateChangelogTask extends DefaultTask {
-    GitChangelogExtension extension
-
-    public GenerateChangelogTask() {
+    GenerateChangelogTask() {
         this.description = 'Generates a changelog'
         this.group = 'build'
+
+        inputs.property 'git-head-sha', 'git rev-parse HEAD'.execute().text.trim().toString()
+    }
+
+    @OutputFiles
+    def getOutputFilePaths() {
+        project.changelog.formats.collect {
+            String format = it as String
+
+            return getOutputFile(format)
+        }
+    }
+
+    File getOutputFile(String format) {
+        // i.e. CHANGELOG.md -> CHANGELOG.html
+        String baseFileName = project.changelog.fileName
+        def fileName = baseFileName.substring(0, baseFileName.lastIndexOf('.')) + ".${format}"
+        return new File(getOutputDirectory(), fileName)
+    }
+
+    File getOutputDirectory() {
+        return project.changelog.outputDirectory
     }
 
     @TaskAction
     def generateChangelog() {
-        extension = project.extensions.changelog
-
-        def outputDirectoryFile = extension.outputDirectory ?: project.buildDir
-        outputDirectoryFile.mkdirs()
-
-        extension.formats.each {
+        project.changelog.formats.each {
             String format = it as String
 
             ChangelogWriter changelogWriter
             if (format == "markdown") {
                 format = "md"
-                changelogWriter = createMarkdownChangelogWriter(extension)
+                changelogWriter = createMarkdownChangelogWriter()
             } else {
-                changelogWriter = createHtmlChangelogWriter(extension)
+                changelogWriter = createHtmlChangelogWriter()
             }
 
-            String fileName = extension.fileName
-            // i.e. CHANGELOG.md -> CHANGELOG.html
-            fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".${format}"
-
-            File changelogFile = new File(outputDirectoryFile, fileName)
+            getOutputDirectory().mkdirs()
+            def changelogFile = getOutputFile(format)
 
             changelogWriter.writeChangelog(new PrintStream(new FileOutputStream(changelogFile)))
         }
     }
 
-    static def createMarkdownChangelogWriter(GitChangelogExtension extension) {
+    def createMarkdownChangelogWriter() {
+        def extension = project.changelog as GitChangelogExtension
         String commitFormat = MoreObjects.firstNonNull(
                 extension.markdownConvention.commitFormat, extension.commitFormat
         )
@@ -53,7 +67,8 @@ class GenerateChangelogTask extends DefaultTask {
         return new MarkdownChangelogWriter(extension, gitExecutor)
     }
 
-    static def createHtmlChangelogWriter(GitChangelogExtension extension) {
+    def createHtmlChangelogWriter() {
+        def extension = project.changelog as GitChangelogExtension
         String commitFormat = MoreObjects.firstNonNull(
                 extension.htmlConvention.commitFormat, extension.commitFormat
         )
