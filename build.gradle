@@ -41,5 +41,9 @@ clean {
     delete 'repo'
 }
 
+task getVersion() {
+    println version
+}
+
 apply from: rootProject.file("gradle/maven-publish.gradle")
 apply from: rootProject.file("gradle/gradle-publish.gradle")
