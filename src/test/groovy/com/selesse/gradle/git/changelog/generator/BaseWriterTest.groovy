@@ -38,6 +38,7 @@ class BaseWriterTest {
         GitRepositoryBuilder.create()
                 .runCommand('git init')
                 .runCommand('git', 'config', 'user.name', 'Test Account')
+                .runCommand('git', 'config', 'user.email', 'test@example.com')
                 .createFile('README.md', 'Hello world!')
                 .runCommand('git add README.md')
                 .runCommand('git', 'commit', '-m', 'Initial commit from the past')

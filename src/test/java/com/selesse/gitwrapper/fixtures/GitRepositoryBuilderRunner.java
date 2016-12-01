@@ -55,10 +55,15 @@ public class GitRepositoryBuilderRunner {
         Process process = processBuilder.start();
         process.waitFor();
 
-        InputStream inputStream = process.getInputStream();
+        InputStream stdoutStream = process.getInputStream();
+        InputStream stdErrStream = process.getErrorStream();
 
         LOGGER.info("Printing output of '{}' to stdout", commandList);
-        ByteStreams.copy(inputStream, System.out);
+        ByteStreams.copy(stdoutStream, System.out);
+        if (stdErrStream != null) {
+            LOGGER.info("Printing output of '{}' to stderr", commandList);
+            ByteStreams.copy(stdErrStream, System.err);
+        }
     }
 
     private void addFile(String file, String contents) throws FileNotFoundException {

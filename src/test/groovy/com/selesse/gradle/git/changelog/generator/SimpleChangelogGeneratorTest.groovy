@@ -8,19 +8,20 @@ import org.junit.Test
 import static org.assertj.core.api.Assertions.assertThat
 
 class SimpleChangelogGeneratorTest {
-    File temporaryGitDirectory
+    GitRepositoryBuilder repository
 
     @After public void tearDown() {
-        if (temporaryGitDirectory != null && temporaryGitDirectory.isDirectory()) {
-            temporaryGitDirectory.deleteDir()
+        if (repository != null) {
+            repository.cleanUp()
         }
     }
 
     @Test public void testSimpleChangelog() {
-        GitRepositoryBuilder repository =
+        repository =
                 GitRepositoryBuilder.create()
                         .runCommand('git init')
                         .runCommand('git', 'config', 'user.name', 'Test Account')
+                        .runCommand('git', 'config', 'user.email', 'test@example.com')
                         .createFile('README.md', 'Hello world!')
                         .runCommand('git add README.md')
                         .runCommand('git', 'commit', '-m', 'Initial commit')
@@ -33,9 +34,7 @@ class SimpleChangelogGeneratorTest {
                             'What happens if I write a really long commit message that spans across multiple lines?')
                         .build()
 
-        temporaryGitDirectory = repository.getDirectory()
-
-        def executor = new GitCommandExecutor('%s (%an)', temporaryGitDirectory)
+        def executor = new GitCommandExecutor('%s (%an)', repository.directory)
 
         ChangelogGenerator changelogGenerator = new SimpleChangelogGenerator(executor)
         String generatedChangelog = changelogGenerator.generateChangelog()

@@ -11,7 +11,7 @@ import static com.selesse.gradle.git.changelog.generator.BaseWriterTest.*;
 class MarkdownChangelogWriterTest extends Specification {
     Project project
     GenerateChangelogTask task
-    File temporaryGitDirectory
+    GitRepositoryBuilder repository
 
     def setup() {
         project = ProjectBuilder.builder().build()
@@ -22,15 +22,15 @@ class MarkdownChangelogWriterTest extends Specification {
     }
 
     def cleanup() {
-        if (temporaryGitDirectory != null && temporaryGitDirectory.isDirectory()) {
-            temporaryGitDirectory.deleteDir()
+        if (repository != null) {
+            repository.cleanUp()
         }
     }
 
     def 'filters out undesired lines'() {
         when:
-        GitRepositoryBuilder repository = createGitRepositoryBuilderRunner().build()
-        temporaryGitDirectory = repository.getDirectory()
+        repository = createGitRepositoryBuilderRunner().build()
+        def temporaryGitDirectory = repository.getDirectory()
 
         project.extensions.changelog.includeLines = { !it.contains('[ci skip]') }
         String changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
@@ -41,9 +41,9 @@ class MarkdownChangelogWriterTest extends Specification {
 
     def 'processes lines according to the extension property'() {
         when:
-        GitRepositoryBuilder repository = createGitRepositoryBuilderRunner().build()
+        repository = createGitRepositoryBuilderRunner().build()
 
-        temporaryGitDirectory = repository.getDirectory()
+        def temporaryGitDirectory = repository.getDirectory()
         project.extensions.changelog.processLines = {
             String input = it as String
             if (input.contains('[ci skip] ')) {
@@ -59,7 +59,7 @@ class MarkdownChangelogWriterTest extends Specification {
 
     def 'since option includes appropriate changes'() {
         when:
-        GitRepositoryBuilder repository = createGitRepositoryBuilderRunner()
+        repository = createGitRepositoryBuilderRunner()
                 .runCommand('git tag 0.5')
                 .sleepOneSecond()
                 .createFile('hi-mom.md', 'hello mother')
@@ -74,7 +74,7 @@ class MarkdownChangelogWriterTest extends Specification {
                 .runCommand('git', 'commit', '-m', 'Add another file')
                 .build()
 
-        temporaryGitDirectory = repository.getDirectory()
+        def temporaryGitDirectory = repository.getDirectory()
         project.extensions.changelog.since = 'last_tag'
         String changelogContent = writeMarkdownChangelog(createMarkdownWriter(project, temporaryGitDirectory))
 
