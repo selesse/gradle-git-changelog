@@ -42,7 +42,9 @@ clean {
 }
 
 task getVersion() {
-    println version
+    doLast {
+        println version
+    }
 }
 
 apply from: rootProject.file("gradle/maven-publish.gradle")
