@@ -54,7 +54,10 @@ class GenerateChangelogTask extends DefaultTask {
             getOutputDirectory().mkdirs()
             def changelogFile = getOutputFile(format)
 
-            changelogWriter.writeChangelog(new PrintStream(new FileOutputStream(changelogFile)))
+
+            def fileOutputStream = new FileOutputStream(changelogFile)
+            changelogWriter.writeChangelog(new PrintStream(fileOutputStream))
+            fileOutputStream.close()
         }
     }
 
