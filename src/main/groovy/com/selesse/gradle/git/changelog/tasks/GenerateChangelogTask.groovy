@@ -7,6 +7,7 @@ import com.selesse.gradle.git.changelog.generator.ChangelogWriter
 import com.selesse.gradle.git.changelog.generator.HtmlChangelogWriter
 import com.selesse.gradle.git.changelog.generator.MarkdownChangelogWriter
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
 
@@ -34,6 +35,7 @@ class GenerateChangelogTask extends DefaultTask {
         return new File(getOutputDirectory(), fileName)
     }
 
+    @OutputDirectory
     File getOutputDirectory() {
         return project.changelog.outputDirectory
     }
