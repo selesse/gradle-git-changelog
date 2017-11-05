@@ -1,13 +1,14 @@
 package com.selesse.gradle.git
 
-import com.google.common.base.Splitter
 import com.selesse.gradle.git.changelog.generator.ComplexChangelogGenerator
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Tag
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 class GitCommandExecutor {
     Logger logger = Logging.getLogger(ComplexChangelogGenerator)
-    private File executionContext
+    File executionContext
     private String changelogFormat
 
     GitCommandExecutor(String changelogFormat) {
@@ -19,20 +20,29 @@ class GitCommandExecutor {
         this.executionContext = context
     }
 
-    public List<String> getTags() {
-        Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(
-                executeCommand('git', 'for-each-ref', '--format=%(objectname) | %(taggerdate)', 'refs/tags')
-        )
+    List<Tag> getTags() {
+        def grgit = Grgit.open(currentDir: executionContext)
+        def tags = grgit.tag.list()
+        grgit.close()
+        return tags
     }
 
-    public String getLastTag() {
-        return executeCommand('git', 'describe', '--abbrev=0', '--tags')
+    Tag getLastTagOrNull() {
+        def tags = getTags()
+        if (tags.size() == 0) {
+            return null
+        }
+        return tags.last()
     }
 
-    public List<String> getTagsSince(String ref) {
-        Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(
-                executeCommand('git', 'tag', '--contains', ref)
-        )
+    List<Tag> getTagsSince(String ref) {
+        def grgit = Grgit.open(currentDir: executionContext)
+        def tags = grgit.tag.list()
+        def tagsSince = tags.findAll {
+            ref != it.name && grgit.isAncestorOf(ref, it)
+        }
+        grgit.close()
+        return tagsSince
     }
 
     private String executeCommand(String... args) {
@@ -51,29 +61,29 @@ class GitCommandExecutor {
         ['git', 'log', "--pretty=format:${changelogFormat}"]
     }
 
-    public String getGitChangelog() {
+    String getGitChangelog() {
         executeCommand('git', 'log', "--pretty=format:${changelogFormat}")
     }
 
-    public String getGitChangelog(String reference) {
+    String getGitChangelog(String reference) {
         logger.info("Getting Git changelog for {}", reference)
         executeCommand((getBaseGitCommand() + reference) as String[])
     }
 
-    public String getGitChangelog(String firstReference, String secondReference) {
+    String getGitChangelog(String firstReference, String secondReference) {
         logger.info("Getting Git changelog for {}...{}", firstReference, secondReference)
         executeCommand((getBaseGitCommand() + "${firstReference}...${secondReference}") as String[])
     }
 
-    public String getTagName(String commit) {
+    String getTagName(String commit) {
         executeCommand('git', 'describe', '--tags', commit)
     }
 
-    public String getTagDate(String tag) {
+    String getTagDate(String tag) {
         executeCommand('git', 'log', '-1', '--format=%ai', tag)
     }
 
-    public String getLatestCommit() {
+    String getLatestCommit() {
         executeCommand('git', 'log', '-1', '--pretty=format:%H')
     }
 }

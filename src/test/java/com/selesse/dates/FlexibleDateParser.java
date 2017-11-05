@@ -11,7 +11,8 @@ public class FlexibleDateParser {
     private List<ThreadLocal<SimpleDateFormat>> threadLocals;
     private static final List<String> formats = Lists.newArrayList(
             "yyyy-MM-dd HH:mm:ss Z",
-            "EEE MMM d HH:mm:ss yyyy Z"
+            "EEE MMM d HH:mm:ss yyyy Z",
+            "EEE MMM d HH:mm:ss z yyyy"
     );
 
     public FlexibleDateParser() {
@@ -37,6 +38,6 @@ public class FlexibleDateParser {
             } catch (ParseException ignored) {
             }
         }
-        return null;
+        throw new IllegalArgumentException("Did not know how to parse date string: " + dateStr);
     }
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Joiner
 import com.google.common.base.Splitter
 import com.selesse.gradle.git.GitCommandExecutor
 import com.selesse.gradle.git.changelog.GitChangelogExtension
+import org.ajoberstar.grgit.Tag
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -29,11 +30,11 @@ abstract class BaseChangelogWriter implements ChangelogWriter {
         Joiner.on('\n').join(changelogLines)
     }
 
-    List<String> getTagList() {
+    List<Tag> getTagList() {
         def tags
         if (extension.since == 'last_tag') {
-            def lastTag = gitExecutor.getLastTag()
-            if (lastTag.isEmpty()) {
+            def lastTag = gitExecutor.getLastTagOrNull()
+            if (lastTag == null) {
                 throw new GradleException('"last_tag" option specified, but no tags were found')
             }
             tags = [lastTag]
@@ -49,7 +50,7 @@ abstract class BaseChangelogWriter implements ChangelogWriter {
     }
 
     String generateChangelogContent() {
-        List<String> tags = getTagList()
+        List<Tag> tags = getTagList()
 
         ChangelogGenerator changelogGenerator
 

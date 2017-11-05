@@ -2,28 +2,33 @@ package com.selesse.gradle.git.changelog.generator
 
 import com.google.common.base.Joiner
 import com.google.common.base.MoreObjects
-import com.google.common.base.Splitter
 import com.selesse.gradle.git.GitCommandExecutor
+import org.ajoberstar.grgit.Commit
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Tag
 
 class ComplexChangelogGenerator implements ChangelogGenerator {
+    final List<Tag> tags
     final Map<String, String> tagAndDateMap
     final GitCommandExecutor executor
     final boolean skipFirstTag
 
-    ComplexChangelogGenerator(GitCommandExecutor executor, List<String> tags, boolean skipFirstTag) {
+    ComplexChangelogGenerator(GitCommandExecutor executor, List<Tag> tags, boolean skipFirstTag) {
         this.executor = executor
+        this.tags = tags
         this.tagAndDateMap = tags.collectEntries {
-            def tagAndDate = Splitter.on("|").omitEmptyStrings().trimResults().splitToList(it) as List<String>
-            if (tagAndDate.size() != 2) {
-                tagAndDate = [tagAndDate.get(0), null]
-            }
-            [(tagAndDate.get(0)): tagAndDate.get(1)]
+            [it.name, it.commit.date.toString()]
         } as Map<String, String>
         this.skipFirstTag = skipFirstTag
     }
 
     String generateChangelog() {
         List<String> changelogs = []
+
+        def grgit = Grgit.open(currentDir: executor.executionContext)
+
+        List<Map<Tag, Commit>> changelog = []
+        // TODO: organize data structure like this, THEN print it
 
         def dateCommitMap = tagAndDateMap.keySet().collectEntries {
             [(executor.getCommitDate(it)): it]
@@ -52,6 +57,7 @@ class ComplexChangelogGenerator implements ChangelogGenerator {
         appendLastCommitChangelog(dateCommitMap, dates, changelogs)
 
         def reverseChangelogs = changelogs.reverse()
+        grgit.close()
         return Joiner.on("\n").join(reverseChangelogs)
     }
 

@@ -5,6 +5,7 @@ import com.selesse.gitwrapper.fixtures.GitRepositoryBuilder
 import com.selesse.gradle.git.GitCommandExecutor
 import com.selesse.gradle.git.changelog.ChangelogParser
 import groovy.time.TimeCategory
+import org.ajoberstar.grgit.Tag
 import org.junit.After
 import org.junit.Test
 
@@ -32,7 +33,7 @@ class ComplexChangelogGeneratorTest {
                     .build()
 
         def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
-        List<String> tags = executor.getTags()
+        List<Tag> tags = executor.getTags()
 
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
         String generatedChangelog = changelogGenerator.generateChangelog()
@@ -64,7 +65,7 @@ class ComplexChangelogGeneratorTest {
                         .build()
 
         def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
-        List<String> tags = executor.getTags()
+        List<Tag> tags = executor.getTags()
 
         assertThat(tags).hasSize(1)
 
@@ -105,7 +106,7 @@ class ComplexChangelogGeneratorTest {
                         .build()
 
         def executor = new GitCommandExecutor('%s (%an)', repository.getDirectory())
-        List<String> tags = executor.getTags()
+        List<Tag> tags = executor.getTags()
 
         ChangelogGenerator changelogGenerator = new ComplexChangelogGenerator(executor, tags, false)
         String generatedChangelog = changelogGenerator.generateChangelog()

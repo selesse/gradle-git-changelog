@@ -6,6 +6,8 @@ import com.selesse.gradle.git.changelog.GitChangelogExtension
 import com.selesse.gradle.git.changelog.generator.ChangelogWriter
 import com.selesse.gradle.git.changelog.generator.HtmlChangelogWriter
 import com.selesse.gradle.git.changelog.generator.MarkdownChangelogWriter
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.exception.GrgitException
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFiles
@@ -16,7 +18,13 @@ class GenerateChangelogTask extends DefaultTask {
         this.description = 'Generates a changelog'
         this.group = 'build'
 
-        inputs.property 'git-head-sha', 'git rev-parse HEAD'.execute().text.trim().toString()
+        try {
+            def grgit = Grgit.open(currentDir: project.rootDir)
+            inputs.property 'git-head-sha', grgit.head().id
+            grgit.close()
+        } catch (GrgitException ignored) {
+            logger.info('Did not find Git repository in {}', project.rootDir.absolutePath)
+        }
     }
 
     @OutputFiles
