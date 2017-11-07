@@ -3,7 +3,9 @@ package com.selesse.gradle.git.changelog.generator
 import com.google.common.base.Joiner
 import com.google.common.base.Splitter
 import com.selesse.gradle.git.GitCommandExecutor
+import com.selesse.gradle.git.changelog.ChangelogParser
 import com.selesse.gradle.git.changelog.GitChangelogExtension
+import com.selesse.gradle.git.changelog.model.Changelog
 import org.ajoberstar.grgit.Tag
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
@@ -49,24 +51,13 @@ abstract class BaseChangelogWriter implements ChangelogWriter {
         tags
     }
 
-    String generateChangelogContent() {
+    Changelog generateChangelog() {
         List<Tag> tags = getTagList()
-
-        ChangelogGenerator changelogGenerator
-
         if (tags.size() == 0) {
             logger.info("No tags found, generating basic changelog")
-            changelogGenerator = new SimpleChangelogGenerator(gitExecutor)
         } else {
             logger.info("{} tags were found, generating complex changelog", tags.size())
-            changelogGenerator = new ComplexChangelogGenerator(gitExecutor, tags, !'beginning'.equals(extension.since))
         }
-
-        def changelog = changelogGenerator.generateChangelog()
-        if (extension.includeLines || extension.processLines) {
-            changelog = filterOrProcessLines(changelog)
-        }
-        return changelog
+        ChangelogParser.generateChangelog(gitExecutor.executionContext, tags)
     }
-
 }

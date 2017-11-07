@@ -16,7 +16,7 @@ class HtmlChangelogWriterTest {
     File temporaryGitDirectory
 
     @Before
-    public void setup() {
+    void setup() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'com.selesse.git.changelog'
         task = project.tasks.generateChangelog as GenerateChangelogTask
@@ -25,13 +25,13 @@ class HtmlChangelogWriterTest {
     }
 
     @After
-    public void cleanup() {
+    void cleanup() {
         if (temporaryGitDirectory != null && temporaryGitDirectory.isDirectory()) {
             temporaryGitDirectory.deleteDir()
         }
     }
 
-    @Test public void testDefaultTemplateIsUsed_withNoTags() {
+    @Test void testDefaultTemplateIsUsed_withNoTags() {
         GitRepositoryBuilder repository = createGitRepositoryBuilderRunner().build()
         project.evaluate()
 
@@ -55,7 +55,7 @@ class HtmlChangelogWriterTest {
         }
     }
 
-    @Test public void testDefaultTemplateIsUsed_withTags() {
+    @Test void testDefaultTemplateIsUsed_withTags() {
         GitRepositoryBuilder repository =
                 createGitRepositoryBuilderRunner()
                     .runCommand('git tag v1.0')

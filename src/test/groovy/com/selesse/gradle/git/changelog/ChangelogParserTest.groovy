@@ -1,48 +1,19 @@
 package com.selesse.gradle.git.changelog
 
+import com.selesse.gradle.git.changelog.model.Changelog
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
 
 class ChangelogParserTest {
-    @Test public void testCanParseChangelogFromChangelogString() {
-        def changelogString = """Unreleased
-----------
-Wed May 13 22:48:19 2015 -0400\tRemove junk (Alex Selesse)
+    @Test void canParseThisRepositoryProperly() {
+        Changelog changelog = ChangelogParser.generateChangelog(new File("."))
+        def firstCommitSet = changelog.changelog.last()
 
-lw-0.2.0 (2015-05-13 20:13:16 -0400)
-------------------------------------
-Wed May 13 20:13:16 2015 -0400\tAnother commit (Alex Selesse)
-Wed May 13 20:06:46 2015 -0400\tCommit #2 (Alex Selesse)
+        assertThat(firstCommitSet.title).isEqualTo("v0.1.0")
+        assertThat(firstCommitSet.associatedCommits.size()).isEqualTo(48)
 
-v0.1.0 (Wed May 13 20:00:37 2015 -0400)
----------------------------------------
-Wed May 13 20:00:15 2015 -0400\tInitial commit (Alex Selesse)"""
-
-        def unreleasedTag = 'Unreleased'
-        def lightweightTag = 'lw-0.2.0 (2015-05-13 20:13:16 -0400)'
-        def annotatedTag = 'v0.1.0 (Wed May 13 20:00:37 2015 -0400)'
-        def changelogParser = new ChangelogParser(changelogString)
-        assertThat(changelogParser.headings).containsOnly(
-                unreleasedTag, lightweightTag, annotatedTag
-        )
-        assertThat(changelogParser.headingsAndTheirCommits.asMap()).containsOnlyKeys(
-                unreleasedTag, lightweightTag, annotatedTag
-        )
-
-        def unreleasedCommits = changelogParser.headingsAndTheirCommits.get(unreleasedTag)
-        assertThat(unreleasedCommits).containsOnly('Wed May 13 22:48:19 2015 -0400\tRemove junk (Alex Selesse)')
-
-        def lightweightCommits = changelogParser.headingsAndTheirCommits.get(lightweightTag)
-        assertThat(lightweightCommits).containsOnly(
-                'Wed May 13 20:13:16 2015 -0400\tAnother commit (Alex Selesse)',
-                'Wed May 13 20:06:46 2015 -0400\tCommit #2 (Alex Selesse)'
-        )
-
-        def annotatedCommits = changelogParser.headingsAndTheirCommits.get(annotatedTag)
-        assertThat(annotatedCommits).containsOnly(
-                'Wed May 13 20:00:15 2015 -0400\tInitial commit (Alex Selesse)',
-        )
+        assertThat(firstCommitSet.associatedCommits.last().id).isEqualTo('e5d3d0f70c6206056c09bca825c02131d4017736')
+        assertThat(firstCommitSet.associatedCommits.first().id).isEqualTo('f5d576568c3d7802e56cf243fa8442190ebba746')
     }
-
 }

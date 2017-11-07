@@ -8,12 +8,12 @@ import com.selesse.gradle.git.GitCommandExecutor
 import org.gradle.api.Project
 
 class BaseWriterTest {
-    public static ChangelogWriter createMarkdownWriter(Project project, File file) {
+    static ChangelogWriter createMarkdownWriter(Project project, File file) {
         GitCommandExecutor gitCommandExecutor = new GitCommandExecutor('%s (%an)', file)
         return new MarkdownChangelogWriter(project.extensions.changelog, gitCommandExecutor)
     }
 
-    public static String writeMarkdownChangelog(MarkdownChangelogWriter writer) {
+    static String writeMarkdownChangelog(MarkdownChangelogWriter writer) {
         def byteArrayOutputStream = new ByteArrayOutputStream()
         writer.writeChangelog(new PrintStream(byteArrayOutputStream))
 
@@ -22,19 +22,19 @@ class BaseWriterTest {
         return Joiner.on('\n').join(changelogContent.subList(3, changelogContent.size()))
     }
 
-    public static ChangelogWriter createHtmlWriter(Project project, File file) {
+    static ChangelogWriter createHtmlWriter(Project project, File file) {
         GitCommandExecutor gitCommandExecutor = new GitCommandExecutor('%s (%an)', file)
         return new HtmlChangelogWriter(project.extensions.changelog, gitCommandExecutor)
     }
 
-    public static String writeHtmlChangelog(HtmlChangelogWriter writer) {
+    static String writeHtmlChangelog(HtmlChangelogWriter writer) {
         def byteArrayOutputStream = new ByteArrayOutputStream()
         writer.writeChangelog(new PrintStream(byteArrayOutputStream))
 
         return byteArrayOutputStream.toString('UTF-8')
     }
 
-    public static GitRepositoryBuilderRunner createGitRepositoryBuilderRunner() {
+    static GitRepositoryBuilderRunner createGitRepositoryBuilderRunner() {
         GitRepositoryBuilder.create()
                 .runCommand('git init')
                 .runCommand('git', 'config', 'user.name', 'Test Account')

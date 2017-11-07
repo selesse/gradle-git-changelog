@@ -2,7 +2,7 @@ package com.selesse.gradle.git.changelog.generator
 
 import com.google.common.collect.Maps
 import com.selesse.gradle.git.GitCommandExecutor
-import com.selesse.gradle.git.changelog.ChangelogParser
+
 import com.selesse.gradle.git.changelog.GitChangelogExtension
 import groovy.text.markup.MarkupTemplateEngine
 import groovy.text.markup.TemplateConfiguration
@@ -17,8 +17,7 @@ class HtmlChangelogWriter extends BaseChangelogWriter {
 
     @Override
     void writeChangelog(PrintStream printStream) {
-        def changelogContent = generateChangelogContent()
-        ChangelogParser changelogParser = new ChangelogParser(changelogContent)
+        def changelog = generateChangelog()
 
         def templateConfig = new TemplateConfiguration()
         templateConfig.with {
@@ -33,8 +32,9 @@ class HtmlChangelogWriter extends BaseChangelogWriter {
         def template = engine.createTypeCheckedModelTemplate(htmlTemplate, modelTypes)
         def model = Maps.newHashMap()
         model.put('title', extension.title)
-        model.put('headings', changelogParser.headings)
-        model.put('headingsToCommitMap', changelogParser.headingsAndTheirCommits.asMap())
+        // TODO: update html model
+        model.put('headings', changelog.changelog.collect { it.title })
+        model.put('headingsToCommitMap', [:])
         template.make(model).writeTo(new PrintWriter(printStream))
     }
 }
